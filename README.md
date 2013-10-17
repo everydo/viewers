@@ -14,6 +14,14 @@ viewers
 - 是否允许打印
 - 设置水印信息
 
+其中水印信息包括：
+
+1. 指定文字内容和图片路径
+2. 指定位置（平铺、左上角等）
+3. 指定字体大小、图片大小
+4. 指定文字颜色、字体（粗体、斜体等）
+5. 指定文字、图片的透明度
+
 易度查看器：
 
        edo_viewer('http://your.server.ip:port', 'file:///var/aa.doc', 'doc-viewer', 700, 700, allow_print, allow_text, watermark_info)
