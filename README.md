@@ -22,15 +22,15 @@ viewers
 4. 指定文字颜色、字体（粗体、斜体等）
 5. 指定文字、图片的透明度
 
-易度查看器：
-
-       edo_viewer('http://your.server.ip:port', 'file:///var/aa.doc', 'doc-viewer', 700, 700, allow_print, allow_text, watermark_info)
-
 具体包括的查看器：
+
+- 纯文本查看器
+
+            render_txt_viewer(div_id, src, width, height, ....
 
 - 图片查看器
 
-             render_image_viwer(div_id, src, width, height, allow_print, allow_text, watermark_info)
+            render_image_viwer(div_id, src, width, height, allow_print, allow_text, watermark_info)
 
 - html查看器
 
@@ -48,4 +48,7 @@ viewers
 
             render_video_viewer(div_id, src, width, height, ....
 
+- 易度的pdf转换swfx查看器
+
+            render_swfx_viewer(div_id, src, width, height, ....
 
