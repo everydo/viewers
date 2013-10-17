@@ -3,7 +3,7 @@ viewers
 
 易度云查看的查看器
 
-参看：http://viewers.everydo.com
+参看：http://viewer.everydo.com
 
 具体包括的查看器：
 
