@@ -72,7 +72,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     el = null;
     return isSupported;
   };
-  var addEvent = function(obj,type,callback) {
+  var addEvent = function(obj, type, callback) {
     if (obj.addEventListener) {
       obj.addEventListener(type, callback, false);
     }
@@ -80,10 +80,10 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
       obj.attachEvent('on' + type, callback);
     }
   }
-  var type = eventSupported("mousewheel") ? "mousewheel":"DOMMouseScroll";
+  var type = eventSupported('mousewheel') ? 'mousewheel' : 'DOMMouseScroll';
   // 注意IE下window没有滚轮事件
-  var wheel = function(obj,callback){
-    addEvent(obj, type,function(event){
+  var wheel = function(obj, callback) {
+    addEvent(obj, type,function(event) {
     event = event || window.event;
     var delta = 0;
     if (event.wheelDelta) {
@@ -100,7 +100,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
         callback.call(obj,event);
       });
     }
-    wheel(document.getElementById(identify),function(e){
+    wheel(document.getElementById(identify), function(e) {
        try {
          thisMovie(identify).MOUSE_WHEEL_detail(e.delta);
         } catch(e) { return false; }
@@ -178,7 +178,7 @@ function render_audio_viewer(url, identidy, serverURL, kwargs) {
   this.ext = kwargs.ext;
 
   if(this.ext != '.mid' || this.ext != '.wma') {
-    var player = serverURL + '/static/singlemp3player.swf';
+    var player = serverURL + '/edoviewer/singlemp3player.swf';
     var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + this.width + '" height="20" ';
        html += 'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab">';
        html += '<param name="movie" value="' + player+ '?file='+ url + '&songVolume=90&showDownload=false" />';
@@ -279,7 +279,7 @@ function showEXIF(extURL, type, identify, serverURL) {
 }
 
 // EXIF 查看器
-function render_exif_viewer(url, identidy, serverURL, kwargs){
+function render_exif_viewer(url, identidy, serverURL, kwargs) {
   this.data = kwargs.data;
 
   var html = '<table style="border-spacing:0;line-height:1.5;display:block">'
@@ -293,7 +293,7 @@ function render_exif_viewer(url, identidy, serverURL, kwargs){
           html += '<tr><th>'+ str + '</th><td>' + this.data[num]['display'] + '</td></tr>';
       } else { continue; }
   }
-  html += '</table>'
+  html += '</table>';
   document.getElementById(identify + '_exif_img').style.display = 'none';
   if (data.length == 0) {
     document.getElementById(identify + '_exif_html').innerHTML = '该图片没有可查看的EXIF信息!';
