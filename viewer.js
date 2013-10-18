@@ -267,7 +267,7 @@ function render_image_viewer(url, identidy, serverURL, kwargs) {
 function showEXIF(extURL, type, identify, serverURL) {
   var exif_table = document.getElementById(identify + '_exif_html').getElementsByTagName('table');
   if(exif_table.length != 0) {
-    if (edo_exif_table[0].style.display == 'block') {
+    if (exif_table[0].style.display == 'block') {
       exif_table[0].style.display = 'none';
     } else {
       exif_table[0].style.display = 'block';
