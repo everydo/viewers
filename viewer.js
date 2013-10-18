@@ -7,7 +7,7 @@ var exifTranslate={XResolution:"影像水平分辨率",YResolution:"影像垂直
 /***************************************** 查看器 ************************************************/
 
 // HTML查看器
-function render_html_viewer(url, identidy, serverURL, kwargs) {
+function render_html_viewer(url, identify, serverURL, kwargs) {
   this.width = kwargs.width;
   this.height = kwargs.height;
 
@@ -109,7 +109,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 }
 
 // 压缩包查看器
-function render_zip_viewer(url, identidy, serverURL, kwargs) {
+function render_zip_viewer(url, identify, serverURL, kwargs) {
   this.data = kwargs.data;
 
   function getChildHTML(children) {
@@ -172,7 +172,7 @@ function render_zip_viewer(url, identidy, serverURL, kwargs) {
 }
 
 // 音频查看器
-function render_audio_viewer(url, identidy, serverURL, kwargs) {
+function render_audio_viewer(url, identify, serverURL, kwargs) {
   this.width = kwargs.width;
   this.height = kwargs.height;
   this.ext = kwargs.ext;

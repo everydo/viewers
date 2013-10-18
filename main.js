@@ -64,7 +64,7 @@ function edoViewerAjaxRequest(n, url, type, identify, serverURL, kwargs, method)
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') +  '&_=' + (new Date()).getTime();
-        window.setTimeout(edoViewerAjaxRequest, 3000, n, ajaxURL, type, identify, serverURL, kwargs, method);
+        window.setTimeout(edoViewerAjaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
         if(type != 'image-exif') {
           document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#FFF;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
         }
@@ -97,7 +97,7 @@ function callback(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
       var ajaxURL = url.replace(/\&_=.*/, '') +  '&_=' + (new Date()).getTime();
-      window.setTimeout(edoViewerAjaxRequest, 3000, n, ajaxURL, type, identify, serverURL, kwargs, method);
+      window.setTimeout(edoViewerAjaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
       if (type != 'image-exif') {
         document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#FFF;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
       }
