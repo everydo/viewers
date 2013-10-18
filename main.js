@@ -126,7 +126,7 @@ function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
     render_image_viewer(url, identify, serverURL, kwargs);
   }
   else if (type == 'image-exif') {
-    kwargs.data = eval('(' + xmlHttp.responseText + ')');
+    kwargs['data'] = eval('(' + xmlHttp.responseText + ')');
     render_exif_viewer(url, identify, serverURL, kwargs);
   }
 }
@@ -137,7 +137,7 @@ function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
 /**************************************** 公共方法 ***********************************************/
 
 // URL 编码进行处理
-function encodeURL(url){
+function encodeURL(url) {
   return encodeURIComponent(url).replace(/\+/g, '%2B');
 }
 
@@ -240,8 +240,8 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
   else if (previewCategory[this.ext] == 'image') {
     var exifURL = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + this.sourceURL;
     var kwargs = {
-      ext:this.ext,
-      exifURL:exifURL
+      ext: this.ext,
+      exifURL: exifURL
     };
     var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.image_png/image_preview?source=' + this.sourceURL;
     edoViewerAjaxRequest(0, url, 'image', this.identify, this.serverURL, kwargs, 'HEAD');
