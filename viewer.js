@@ -12,8 +12,8 @@ function render_html_viewer(url, identidy, serverURL, kwargs) {
   this.height = kwargs.height;
 
   var html = '<div style="border:3px solid #ededed;">';
-    html += '<iframe src="' + url + '" width="' + this.width + '" height="' + this.height + '"></iframe>';
-    html += '</div>';
+     html += '<iframe src="' + url + '" width="' + this.width + '" height="' + this.height + '"></iframe>';
+     html += '</div>';
   document.getElementById(identify).innerHTML = html;
 }
 
@@ -208,21 +208,21 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
 
   if (this.ext == '.swf') {
     var html = '<div class="flash-movie hVlog">'
-        html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ';
-        html += 'codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" ';
-        html += 'width="' + this.width + '" height="' + this.height+ '" id="' + identify + '-swf-player" align="middle">';
-        html += '<param name="allowScriptAccess" value="sameDomain" />'
-        html += '<param name="movie" value="' + url + '" />'
-        html += '<param name="quality" value="high" />'
-        html += '<param name="bgcolor" value="#ffffff" />'
-        html += '<param name="wmode" value="transparent" />'
-        html += '<embed id="' + identify + '-swf-player-embed" src="' + url + '" quality="high" wmode="transparent" bgcolor="#ffffff" ';
-        html += 'width="' + this.width + '" height="' + this.width + '" ';
-        html += 'align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" ';
-        html += 'pluginspage="http://www.adobe.com/go/getflashplayer" />';
-        html += '</object>';
-        html += '</div>';
-        document.getElementById(identify).innerHTML = html;
+       html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ';
+       html += 'codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" ';
+       html += 'width="' + this.width + '" height="' + this.height+ '" id="' + identify + '-swf-player" align="middle">';
+       html += '<param name="allowScriptAccess" value="sameDomain" />'
+       html += '<param name="movie" value="' + url + '" />'
+       html += '<param name="quality" value="high" />'
+       html += '<param name="bgcolor" value="#ffffff" />'
+       html += '<param name="wmode" value="transparent" />'
+       html += '<embed id="' + identify + '-swf-player-embed" src="' + url + '" quality="high" wmode="transparent" bgcolor="#ffffff" ';
+       html += 'width="' + this.width + '" height="' + this.width + '" ';
+       html += 'align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" ';
+       html += 'pluginspage="http://www.adobe.com/go/getflashplayer" />';
+       html += '</object>';
+       html += '</div>';
+    document.getElementById(identify).innerHTML = html;
   } else {
     document.getElementById(identify).innerHTML = '123';
     var html = '<a style="display:block;width:'+ this.width +'px;height:' + this.height + 'px" href="' + url + '" id="' + identify + 'player"></a>';

@@ -26,29 +26,29 @@ viewers
 
 - 纯文本查看器
 
-            render_txt_viewer(div_id, src, width, height, ....
+            render_text_viewer(url, identidy, serverURL, kwargs)
 
 - 图片查看器
 
-            render_image_viwer(div_id, src, width, height, allow_print, allow_text, watermark_info)
+            render_image_viwer(url, identidy, serverURL, kwargs)
 
 - html查看器
 
-            render_html_viwer(div_id, src, width, height, ....
+            render_html_viwer(url, identidy, serverURL, kwargs)
 
 - 压缩包查看器
 
-            render_zip_viewer(div_id, src, width, height, ....
+            render_zip_viewer(url, identidy, serverURL, kwargs)
 
 - 音频查看器
 
-            render_audio_viewer(div_id, src, width, height, ....
+            render_audio_viewer(url, identidy, serverURL, kwargs)
 
 - 视频查看器
 
-            render_video_viewer(div_id, src, width, height, ....
+            render_video_viewer(url, identidy, serverURL, kwargs)
 
 - 易度的pdf转换swfx查看器
 
-            render_swfx_viewer(div_id, src, width, height, ....
+            render_flash_viewer(url, identidy, serverURL, kwargs)
 
