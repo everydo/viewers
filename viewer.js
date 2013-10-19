@@ -270,7 +270,7 @@ function showEXIF(extURL, type, identify, serverURL) {
       exif_table[0].style.display = 'block';
     }
   } else {
-    document.getElementById(identify + '-exif-img').style.display = 'block';
+    document.getElementById(identify + '-exif-waiting').style.display = 'block';
     ajaxRequest(0, this.exifURL, 'image-exif', identify, serverURL, {}, 'GET');
   }
 }
