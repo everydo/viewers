@@ -11,9 +11,7 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
   this.width = kwargs.width;
   this.height = kwargs.height;
 
-  var html = '<div style="border:3px solid #ededed;">';
-     html += '<iframe src="' + url + '" width="' + this.width + '" height="' + this.height + '"></iframe>';
-     html += '</div>';
+  var html = '<iframe style="border:1px solid #c3c3c3; width:'+ this.width +'; height:' + this.height + '" src="' + url + '"></iframe>';
   document.getElementById(identify).innerHTML = html;
 }
 
@@ -27,7 +25,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 
   // 浏览器没装FLASH采用HTML预览
   if (swfobject.getFlashPlayerVersion()['major'] < 9) {
-    edoViewerAjaxRequest(0, this.htmlURL, 'html', identify, serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, this.htmlURL, 'html', identify, serverURL, kwargs, 'HEAD');
     return;
   }
   document.getElementById(identify).innerHTML = '请下载最新版本的flash播放器安装后再刷新页面查看';
@@ -96,7 +94,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
         delta = -event.detail/3;
       }
       // 由于事件对象的原有属性是只读，我们只能通过添加一个私有属性delta来解决兼容问题
-        event.delta =  Math.round(delta); //修正safari的浮点 bug
+        event.delta = Math.round(delta); //修正safari的浮点 bug
         callback.call(obj,event);
       });
     }
@@ -113,7 +111,7 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
   this.data = kwargs.data;
 
   function getChildHTML(children) {
-    var html = '  <b>' + children.length + '项</b><ul style="padding-left:20px">' + renderHTML(children) + '</ul>';
+    var html = ' <b>' + children.length + '项</b><ul style="padding-left:20px;">' + renderHTML(children) + '</ul>';
     return html;
   }
   function getDisplaySize(size) {
@@ -127,18 +125,18 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
       return Math.round(size/1048576.0*100)/100 + 'MB';
     }
     else {
-      return Math.round(size/1024.0*100)/100  + 'KB';
+      return Math.round(size/1024.0*100)/100 + 'KB';
     }
   }
   function renderHTML(current) {
-    var html = ''
+    var html = '';
     for(var child = 0; child < current.length; child ++) {
       var children = '';
       var path = current[child]['path'];
 
       var href_url = url.split('?');
       var spliturl = href_url[0].split('\/');
-      var domains = spliturl[0]  + '//' + spliturl[2];
+      var domains = spliturl[0] + '//' + spliturl[2];
       var url_0 = href_url[0].replace(domains, '');
       var spliturl_0 = url_0.split('\/');
       var url_1 = url_0.replace(spliturl_0[spliturl_0.length-1], '');
@@ -150,19 +148,19 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
         }
       }
       var size = '';
-      var download = '  <a href="' + download_url + '" title="下载"><img src="' + serverURL + '/static/download.gif">下载</a>';
+      var download = ' <a href="' + download_url + '" title="下载"><img src="' + serverURL + '/static/download.gif">下载</a>';
       if (current[child]['size']) {
         size = getDisplaySize(current[child]['size']);
       }
       if (current[child]['type'] == 'folder') {
-        html += '<li style="list-style-type: none;"><img src="' + serverURL + '/static/folder.gif" style="vertical-align:middle"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
+        html += '<li style="list-style-type:none;"><img src="' + serverURL + '/static/folder.gif" style="vertical-align:middle"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
         var priview_url = serverURL + '/@@view?' + href_url[1] + '&path=' + url_1 + 'decompress' + encodeURL(path);
         var splitname = current[child]['name'].split('.');
         if (supportExt[(splitname[splitname.length-1]).toLowerCase()]){
-          html += '<table style="margin:0;width:100%"><tr><td width="53%"><a href="' + priview_url + '" target="_blank" title="预览">' + current[child]['name'] +'</a></td>'+ children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
+          html += '<table style="margin:0; width:100%"><tr><td width="53%"><a href="' + priview_url + '" target="_blank" title="预览">' + current[child]['name'] +'</a></td>'+ children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
         } else {
-          html += '<table style="margin:0;width:100%"><tr><td width="53%">' + current[child]['name'] + '</td>' + children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
+          html += '<table style="margin:0; width:100%"><tr><td width="53%">' + current[child]['name'] + '</td>' + children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
         }
       }
     }
@@ -181,7 +179,7 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
     var player = serverURL + '/edoviewer/singlemp3player.swf';
     var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + this.width + '" height="20" ';
        html += 'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab">';
-       html += '<param name="movie" value="' + player+ '?file='+ url + '&songVolume=90&showDownload=false" />';
+       html += '<param name="movie" value="' + player + '?file='+ url + '&songVolume=90&showDownload=false" />';
        html += '<param name="wmode" value="transparent" />';
        html += '<embed wmode="transparent" width="' + this.width + '" height="20" ';
        html += 'src="' + player + '?file=' + url + '&songVolume=90&showDownload=false" ';
@@ -224,7 +222,6 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
        html += '</div>';
     document.getElementById(identify).innerHTML = html;
   } else {
-    document.getElementById(identify).innerHTML = '123';
     var html = '<a style="display:block;width:'+ this.width +'px;height:' + this.height + 'px" href="' + url + '" id="' + identify + 'player"></a>';
     document.getElementById(identify).innerHTML = html;
     flowplayer(identify + 'player', {src: serverURL + '/edoviewer/flowplayer-3.1.5.swf', wmode: 'opaque'}, {
@@ -254,18 +251,18 @@ function render_image_viewer(url, identidy, serverURL, kwargs) {
   this.exifURL = kwargs.exifURL;
   this.ext = kwargs.ext;
 
-  document.getElementById(identify).innerHTML  = '<img src="' + url + '">';
+  document.getElementById(identify).innerHTML = '<img src="' + url + '">';
 
   if(this.ext== '.jpg' || this.ext == '.jpeg' || this.ext == '.tiff') {
     var fun = "showEXIF('" + exifURL + "', 'image', '" + identify + "', '" + serverURL + "')";
     var html = '<br /><a href="javascript:;"; onclick="' + fun + '" />查看EXIF信息</a>';
-       html += '<img src="' + serverURL + '/static/waiting.gif" id="' + identify + '_exif_img" style="display:none">';
-       html += '<div id="' + identify + '_exif_html"></div>';
+       html += '<img src="' + serverURL + '/static/waiting.gif" id="' + identify + '-exif-waiting" style="display:none">';
+       html += '<div id="' + identify + '-exif-html"></div>';
     document.getElementById(identify).innerHTML += html;
   }
 }
 function showEXIF(extURL, type, identify, serverURL) {
-  var exif_table = document.getElementById(identify + '_exif_html').getElementsByTagName('table');
+  var exif_table = document.getElementById(identify + '-exif-html').getElementsByTagName('table');
   if(exif_table.length != 0) {
     if (exif_table[0].style.display == 'block') {
       exif_table[0].style.display = 'none';
@@ -273,8 +270,8 @@ function showEXIF(extURL, type, identify, serverURL) {
       exif_table[0].style.display = 'block';
     }
   } else {
-    document.getElementById(identify + '_exif_img').style.display = 'block';
-    edoViewerAjaxRequest(0, this.exifURL, 'image-exif', identify, serverURL, {}, 'GET');
+    document.getElementById(identify + '-exif-img').style.display = 'block';
+    ajaxRequest(0, this.exifURL, 'image-exif', identify, serverURL, {}, 'GET');
   }
 }
 
@@ -282,7 +279,7 @@ function showEXIF(extURL, type, identify, serverURL) {
 function render_exif_viewer(url, identidy, serverURL, kwargs) {
   this.data = kwargs.data;
 
-  var html = '<table style="border-spacing:0;line-height:1.5;display:block">'
+  var html = '<table style="border-spacing:0; line-height:1.5; display:block">'
   for(num = 0; num < this.data.length; num ++) {
     var str = this.data[num]['title'];
       if (exifTranslate[this.data[num]['title']]) {
@@ -294,11 +291,11 @@ function render_exif_viewer(url, identidy, serverURL, kwargs) {
       } else { continue; }
   }
   html += '</table>';
-  document.getElementById(identify + '_exif_img').style.display = 'none';
+  document.getElementById(identify + '-exif-waiting').style.display = 'none';
   if (data.length == 0) {
-    document.getElementById(identify + '_exif_html').innerHTML = '该图片没有可查看的EXIF信息!';
+    document.getElementById(identify + '-exif-html').innerHTML = '该图片没有可查看的EXIF信！';
   } else {
-    document.getElementById(identify + '_exif_html').innerHTML = html;
+    document.getElementById(identify + '-exif-html').innerHTML = html;
   }
 }
 
