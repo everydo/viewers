@@ -32,15 +32,15 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
   xhr.onreadystatechange = function(){callback(xhr, n, url, type, identify, serverURL, kwargs, method)};
 }
 
-function edoViewerAjaxRequest(n, url, type, identify, serverURL, kwargs, method) {
+function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
   if (type != 'image-exif') {
-    document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#FFF;">加载中请稍候...</span></center>';
+    document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">加载中请稍候...</span></center>';
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
   if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1) {
     if(type != 'image-exif') {
-      document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#FFF;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
+      document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
     }
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
@@ -63,10 +63,10 @@ function edoViewerAjaxRequest(n, url, type, identify, serverURL, kwargs, method)
         }
       }
       xdr.onerror = function() {
-        var ajaxURL = url.replace(/\&_=.*/, '') +  '&_=' + (new Date()).getTime();
-        window.setTimeout(edoViewerAjaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
+        var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
+        window.setTimeout(ajaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
         if(type != 'image-exif') {
-          document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#FFF;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
+          document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
         }
       };
       var hasShow = false;
@@ -96,10 +96,10 @@ function callback(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
       responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs);
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
-      var ajaxURL = url.replace(/\&_=.*/, '') +  '&_=' + (new Date()).getTime();
-      window.setTimeout(edoViewerAjaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
+      var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
+      window.setTimeout(ajaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
       if (type != 'image-exif') {
-        document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#FFF;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
+        document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600; color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
       }
     }
     else {
@@ -162,7 +162,7 @@ function getExt(url) {
   if (endChar.indexOf('?') == -1) {
     var ext = ('.' + endChar.split('.')[endChar.split('.').length-1]).toLowerCase();
   } else {
-    var splitExt = (end_str.split('.')[end_str.split('.').length-1]).split('?');
+    var splitExt = (endChar.split('.')[endChar.split('.').length-1]).split('?');
     var ext = ('.' + splitSuffix_0[0]).toLowerCase();
   }
   return ext;
@@ -201,12 +201,12 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
     var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.text_html/transformed.html?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
-      width: width,
-      height: height,
-      allowPrint: allowPrint,
-      allowCopy: allowCopy
+      width: this.width,
+      height: this.height,
+      allowPrint: this.allowPrint,
+      allowCopy: this.allowCopy
     };
-    edoViewerAjaxRequest(0, url, 'html', this.identify, this.serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'html', this.identify, this.serverURL, kwargs, 'HEAD');
   }
   // 压缩包查看
   else if (previewCategory[this.ext] == 'RAR') {
@@ -214,27 +214,27 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
       ext: this.ext
     };
     var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_json/transformed.json?source=' + this.sourceURL;
-    edoViewerAjaxRequest(0, url, 'RAR', this.identify, this.serverURL, kwargs, 'GET');
+    ajaxRequest(0, url, 'RAR', this.identify, this.serverURL, kwargs, 'GET');
   }
   // 音频查看
   else if (previewCategory[this.ext] == 'audio') {
     var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
-      width: width,
-      height: height
+      width: this.width,
+      height: this.height
     };
-    edoViewerAjaxRequest(0, url, 'audio', this.identify, this.serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'audio', this.identify, this.serverURL, kwargs, 'HEAD');
   }
   // 视频查看
   else if (previewCategory[this.ext] == 'video') {
     var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
-      width: width,
-      height: height
+      width: this.width,
+      height: this.height
     };
-    edoViewerAjaxRequest(0, url, 'video', this.identify, this.serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'video', this.identify, this.serverURL, kwargs, 'HEAD');
   }
   // 图片查看
   else if (previewCategory[this.ext] == 'image') {
@@ -244,7 +244,7 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
       exifURL: exifURL
     };
     var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.image_png/image_preview?source=' + this.sourceURL;
-    edoViewerAjaxRequest(0, url, 'image', this.identify, this.serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'image', this.identify, this.serverURL, kwargs, 'HEAD');
   }
   else {
     document.getElementById(this.identify).innerHTML = '该文件的预览方式暂没添加上去！';
