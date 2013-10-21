@@ -1,13 +1,17 @@
-// 文件的预览方式
+// 文档预览方式
 var previewCategory={".doc":"flash",".docx":"flash",".ppt":"flash",".pptx":"flash",".pdf":"flash",".rtf":"flash",".wps":"flash",".et":"flash",".dps":"flash",".odt":"flash",".odp":"flash",".ott":"flash",".ots":"flash",".otp":"flash",".vsd":"flash",".vss":"flash",".vst":"flash",".xls":"html",".xlsx":"html",".mht":"html",".html":"html",".htm":"html",".txt":"html",".rst":"html",".xml":"html",".css":"html",".csv":"html",".java":"html",".c":"html",".cpp":"html",".jsp":"html",".asp":"html",".php":"html",".py":"html",".as":"html",".sh":"html",".rar":"RAR",".zip":"RAR",".tar":"RAR",".tgz":"RAR",".gz":"RAR",".mp3":"audio",".wma":"audio",".rm":"audio",".wav":"audio",".mid":"audio",".avi":"video",".rmvb":"video",".rmvb":"video",".mov":"video",".mp4":"video",".swf":"video",".flv":"video",".mpg":"video",".ram":"video",".wmv":"video",".m4v":"video",".3gp":"video",".png":"image",".gif":"image",".jpg":"image",".jpeg":"image",".bmp":"image",".tiff":"image",".ppm":"image",".dwg":"image"};
 
+// 文档转换提示
+var timeoutError='转换超时，请刷新后重试...';
+var loadingFunc=function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/loading.gif">';}
+var conversionFunc=function(serverURL, n){return '转换中请稍候' + (n + 1) + '/30 <img src="' + serverURL + '/static/loading.gif">';}
 
 /****************************************** Ajax *************************************************/
 
 function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (n > 29) {
     if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = '<span style="color:#666;">转换超时，请刷新后重试...</span>';
+      document.getElementById(identify).innerHTML = timeoutError;
       return;
     } else {
       return;
@@ -34,19 +38,19 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (onlyRequest != true) {
-    document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">加载中请稍候...</span></center>';
+    document.getElementById(identify).innerHTML = loadingFunc(serverURL);
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
   if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1) {
     if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
+      document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
     }
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > 29) {
         if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = '<span style="color:#666;">转换超时，请刷新后重试...</span>';
+          document.getElementById(identify).innerHTML = timeoutError;
           return;
         }
         else
@@ -66,7 +70,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
         window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, 3000);
         if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
+          document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
         }
       };
       var hasShow = false;
@@ -99,7 +103,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
       window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, 3000);
       if (onlyRequest != true) {
-        document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600; color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
+        document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
       }
     }
     else {
@@ -109,7 +113,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
 }
 
 function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs, onlyRequest) {
-  if (onlyRequest == true && type != 'image-exif') {
+  if (onlyRequest == true && !type) {
     return;
   }
 
@@ -141,12 +145,12 @@ function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs, onlyRe
 
 /**************************************** 公共方法 ***********************************************/
 
-// URL 编码进行处理
+// 进行编码处理
 function encodeURL(url) {
   return encodeURIComponent(url).replace(/\+/g, '%2B');
 }
 
-// URL 删除最后斜杠
+// 删除最后斜杠
 function removeLastSlash(url) {
   if (url.charAt(url.length-1) == '/') {
     var url = url.substring(0, url.length-1);
@@ -154,14 +158,14 @@ function removeLastSlash(url) {
   return url;
 }
 
-// URL 得到文件后缀
+// 得到文件后缀
 function getExt(url) {
   var splitURL = url.split('/');
   var endChar = url.split('/').reverse();
   if (!endChar[0]) {
-      endChar = endChar[1];
+    endChar = endChar[1];
   } else {
-      endChar = endChar[0];
+    endChar = endChar[0];
   }
 
   if (endChar.indexOf('?') == -1) {
@@ -179,7 +183,7 @@ function getType(ext) {
   if (type == 'flash') {
     // 浏览器没装FLASH采用HTML预览
     if (swfobject.getFlashPlayerVersion()['major'] < 9) {
-        type = 'html';
+      type = 'html';
     }
   }
   return type;
@@ -272,7 +276,7 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
     render_video_viewer(url, identify, serverURL, kwargs);
   }
   // 图片查看
-  else {
+  else if (type == 'image') {
     var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
     var kwargs = {
       ext: ext,
@@ -304,11 +308,9 @@ function prepare_for_view(sourceURL, serverURL) {
     var htmlURL = getURL('html', serverURL, dirMD5, sourceURL);
     items.push(htmlURL);
   }
-  else if (type == 'image') {
-    if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
-      var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
-      items.push(exifURL);
-    }
+  else if (ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
+    var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
+    items.push(exifURL);
   }
 
   for (var x = 0; x < items.length; x ++) {
