@@ -163,7 +163,7 @@ function getExt(url) {
     var ext = ('.' + endChar.split('.')[endChar.split('.').length-1]).toLowerCase();
   } else {
     var splitExt = (endChar.split('.')[endChar.split('.').length-1]).split('?');
-    var ext = ('.' + splitSuffix_0[0]).toLowerCase();
+    var ext = ('.' + splitExt[0]).toLowerCase();
   }
   return ext;
 }
