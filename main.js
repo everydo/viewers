@@ -196,8 +196,13 @@ function getURL(type, serverURL, dirMD5, sourceURL) {
     'image': '.frs.image_png/image_preview',
     'image-exif': '.frs.application_exif-x-json/transformed.json'
   }
-  var url = serverURL + '/cache/files/' + dirMD5 + '/' + patterns[type]  + '?source=' + sourceURL;
-  return url;
+  var pattern = patterns[type];
+  if (pattern == undefined) {
+    return;
+  } else {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/' + pattern  + '?source=' + sourceURL;
+    return url;
+  }
 }
 
 /****************************************** END **************************************************/
@@ -215,6 +220,12 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
   var allowPrint = allowPrint == 'false' || allowPrint == false ? false : true;
   var allowCopy = allowCopy == 'false' || allowCopy == false ? false : true;
 
+  if (type == undefined) {
+    document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
+  } else {
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
+  }
+
   // FLASH 查看
   if(type == 'flash') {
     var kwargs = {
@@ -223,7 +234,6 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
       allowPrint: allowPrint,
       allowCopy: allowCopy
     };
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
   // HTML 查看
@@ -233,7 +243,6 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
       width: width,
       height: height
     };
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_html_viewer(url, identify, serverURL, kwargs);
   }
   // 压缩包查看
@@ -241,7 +250,6 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
     var kwargs = {
       ext: ext
     };
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_zip_viewer(url, identify, serverURL, kwargs);
   }
   // 音频查看
@@ -251,32 +259,25 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
       width: width,
       height: height
     };
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_audio_viewer(url, identify, serverURL, kwargs);
   }
   // 视频查看
   else if (type == 'video') {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     var kwargs = {
       ext: ext,
       width: width,
       height: height
     };
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_video_viewer(url, identify, serverURL, kwargs);
   }
   // 图片查看
-  else if (type == 'image') {
+  else {
     var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
     var kwargs = {
       ext: ext,
       exifURL: exifURL
     };
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_image_viewer(url, identify, serverURL, kwargs);
-  }
-  else {
-    document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
   }
 }
 
@@ -291,46 +292,22 @@ function prepare_for_view(sourceURL, serverURL) {
   var start = 29;
   var items = new Array();
 
-  // FLASH 转换
-  if(type == 'flash') {
+  if (type == undefined) {
+    return;
+  } else {
     var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
+  }
 
+  if(type == 'flash') {
     var htmlURL = getURL('html', serverURL, dirMD5, sourceURL);
     items.push(htmlURL);
   }
-  // HTML 转换
-  else if (type == 'html') {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
-    items.push(url);
-  }
-  // 压缩包转换
-  else if (type == 'RAR') {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
-    items.push(url);
-  }
-  // 音频转换
-  else if (type == 'audio') {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
-    items.push(url);
-  }
-  // 视频转换
-  else if (type == 'video') {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
-    items.push(url);
-  }
-  // 图片转换
   else if (type == 'image') {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
-    items.push(url);
-
     if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
       var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
       items.push(exifURL);
     }
-  }
-  else {
-    return;
   }
 
   for (var x = 0; x < items.length; x ++) {
