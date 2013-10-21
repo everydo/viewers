@@ -222,6 +222,7 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
 
   if (type == undefined) {
     document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
+    return;
   } else {
     var url = getURL(type, serverURL, dirMD5, sourceURL);
   }
