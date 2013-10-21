@@ -185,6 +185,21 @@ function getType(ext) {
   return type;
 }
 
+// 得到预览地址
+function getURL(type, serverURL, dirMD5, sourceURL) {
+  var patterns = {
+    'flash': '.frs.application_x-shockwave-flash-x/transformed.swf',
+    'html': '.frs.text_html/transformed.html',
+    'RAR': '.frs.application_json/transformed.json',
+    'audio': '.frs.audio_x-mpeg/transformed.mp3',
+    'video': '.frs.video_x-flv/transformed.flv',
+    'image': '.frs.image_png/image_preview',
+    'image-exif': '.frs.application_exif-x-json/transformed.json'
+  }
+  var url = serverURL + '/cache/files/' + dirMD5 + '/' + patterns[type]  + '?source=' + sourceURL;
+  return url;
+}
+
 /****************************************** END **************************************************/
 
 
@@ -208,17 +223,17 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
       allowPrint: allowPrint,
       allowCopy: allowCopy
     };
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_x-shockwave-flash-x/transformed.swf?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
   // HTML 查看
   else if (type == 'html') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.text_html/transformed.html?source=' + sourceURL;
     var kwargs = {
       ext: ext,
       width: width,
       height: height
     };
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_html_viewer(url, identify, serverURL, kwargs);
   }
   // 压缩包查看
@@ -226,37 +241,38 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
     var kwargs = {
       ext: ext
     };
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_json/transformed.json?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_zip_viewer(url, identify, serverURL, kwargs);
   }
   // 音频查看
   else if (type == 'audio') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + sourceURL;
     var kwargs = {
       ext: ext,
       width: width,
       height: height
     };
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_audio_viewer(url, identify, serverURL, kwargs);
   }
   // 视频查看
   else if (type == 'video') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     var kwargs = {
       ext: ext,
       width: width,
       height: height
     };
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_video_viewer(url, identify, serverURL, kwargs);
   }
   // 图片查看
   else if (type == 'image') {
-    var exifURL = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + sourceURL;
+    var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
     var kwargs = {
       ext: ext,
       exifURL: exifURL
     };
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.image_png/image_preview?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     render_image_viewer(url, identify, serverURL, kwargs);
   }
   else {
@@ -277,38 +293,39 @@ function prepare_for_view(sourceURL, serverURL) {
 
   // FLASH 转换
   if(type == 'flash') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_x-shockwave-flash-x/transformed.swf?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
-    var htmlURL = serverURL + '/cache/files/' + dirMD5 + '/.frs.text_html/transformed.html?source=' + sourceURL;
+
+    var htmlURL = getURL('html', serverURL, dirMD5, sourceURL);
     items.push(htmlURL);
   }
   // HTML 转换
   else if (type == 'html') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.text_html/transformed.html?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
   }
   // 压缩包转换
   else if (type == 'RAR') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_json/transformed.json?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
   }
   // 音频转换
   else if (type == 'audio') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
   }
   // 视频转换
   else if (type == 'video') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
   }
   // 图片转换
   else if (type == 'image') {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.image_png/image_preview?source=' + sourceURL;
+    var url = getURL(type, serverURL, dirMD5, sourceURL);
     items.push(url);
 
     if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
-      var exifURL = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + sourceURL;
+      var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
       items.push(exifURL);
     }
   }
