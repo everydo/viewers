@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>demo</title>
+        <script src="http://viewer.everydo.com:9870/static/flowplayer-3.1.4.min.js"></script>
+        <script src="http://viewer.everydo.com:9870/static/swfobject.js"></script>
+        <script src="http://viewer.everydo.com:9870/static/md5.js"></script>
+        <script src="http://viewer.everydo.com:9870/static/viewer.js"></script>
+        <script src="http://viewer.everydo.com:9870/static/main.js"></script>
+    </head>  
+    <body>
+    
+    <div id="doc-viewer-01"></div>
+    <div id="doc-viewer-02"></div>
+    <div id="doc-viewer-03"></div>
+    <div id="doc-viewer-04"></div>
+    <div id="doc-viewer-05"></div>
+    <div id="doc-viewer-06"></div>
+    
+    <script type="text/javascript">
+        var serverURL = 'http://viewer.everydo.com:9870';
+        edo_viewer(serverURL, 'http://download.zopen.cn/demo/edo-viewer.ppt', 'doc-viewer-01', 700, 537);
+        edo_viewer(serverURL, 'http://download.zopen.cn/demo/everydo-test-archive-file.rar', 'doc-viewer-02');
+        edo_viewer(serverURL, 'http://download.zopen.cn/demo/demo.wav', 'doc-viewer-03', 250);
+        edo_viewer(serverURL, 'http://download.zopen.cn/demo/mm[1].mpg', 'doc-viewer-04', 700, 600);
+        edo_viewer(serverURL, 'http://download.zopen.cn/demo/application.py', 'doc-viewer-05', 700, 500);
+        edo_viewer(serverURL, 'http://download.zopen.cn/demo/exif.jpg', 'doc-viewer-06');
+    </script>
+    
+</body>
+</html>
