@@ -8,31 +8,31 @@ var exifTranslate={XResolution:"影像水平分辨率",YResolution:"影像垂直
 
 // HTML查看器
 function render_html_viewer(url, identify, serverURL, kwargs) {
-  this.callback = kwargs.callback;
-  if (!this.callback) {
+  var callback = kwargs.callback;
+  if (!callback) {
     ajaxRequest(0, url, 'html', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  this.width = kwargs.width;
-  this.height = kwargs.height;
+  var width = kwargs.width;
+  var height = kwargs.height;
 
-  var html = '<iframe name="iframe-' + identify+ '" width="'+ this.width +'" height="' + this.height + '" ';
+  var html = '<iframe name="iframe-' + identify + '" width="'+ width +'" height="' + height + '" ';
      html += 'style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
   document.getElementById(identify).innerHTML = html;
 }
 
 // FLASH查看器
 function render_flash_viewer(url, identify, serverURL, kwargs) {
-  this.width = kwargs.width;
-  this.height = kwargs.height;
-  this.allowPrint = kwargs.allowPrint;
-  this.allowCopy = kwargs.allowCopy;
+  var width = kwargs.width;
+  var height = kwargs.height;
+  var allowPrint = kwargs.allowPrint;
+  var allowCopy = kwargs.allowCopy;
 
   document.getElementById(identify).innerHTML = '请下载最新版本的flash播放器安装后再刷新页面查看';
   var flashvars = {
     swf_file: url,
-    allow_print: this.allowPrint,
-    allow_copy: this.allowCopy,
+    allow_print: allowPrint,
+    allow_copy: allowCopy,
     allow_debug: false
   };
   var params = {
@@ -45,7 +45,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
   var attributes = {
     'id': identify
   };
-  swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, this.width, this.height, '9.0.45', null, flashvars, params, attributes);
+  swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, width, height, '9.0.45', null, flashvars, params, attributes);
   // FIXME Mouse Wheel
   function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
@@ -108,12 +108,12 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 
 // 压缩包查看器
 function render_zip_viewer(url, identify, serverURL, kwargs) {
-  this.callback = kwargs.callback;
-  if (!this.callback) {
+  var callback = kwargs.callback;
+  if (!callback) {
     ajaxRequest(0, url, 'RAR', identify, serverURL, kwargs, 'GET');
     return;
   }
-  this.data = kwargs.data;
+  var data = kwargs.data;
 
   function getChildHTML(children) {
     var html = ' <b>' + children.length + '项</b><ul style="padding-left:20px;">' + renderHTML(children) + '</ul>';
@@ -171,27 +171,27 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
     }
     return html;
   }
-  document.getElementById(identify).innerHTML = '<ul>' + renderHTML(this.data['children']) + '</ul>';
+  document.getElementById(identify).innerHTML = '<ul>' + renderHTML(data['children']) + '</ul>';
 }
 
 // 音频查看器
 function render_audio_viewer(url, identify, serverURL, kwargs) {
-  this.callback = kwargs.callback;
-  if (!this.callback) {
+  var callback = kwargs.callback;
+  if (!callback) {
     ajaxRequest(0, url, 'audio', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  this.width = kwargs.width;
-  this.height = kwargs.height;
-  this.ext = kwargs.ext;
+  var width = kwargs.width;
+  var height = kwargs.height;
+  var ext = kwargs.ext;
 
-  if(this.ext != '.mid' || this.ext != '.wma') {
+  if(ext != '.mid' || ext != '.wma') {
     var player = serverURL + '/edoviewer/singlemp3player.swf';
-    var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + this.width + '" height="20" ';
+    var html = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + width + '" height="20" ';
        html += 'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab">';
        html += '<param name="movie" value="' + player + '?file='+ url + '&songVolume=90&showDownload=false" />';
        html += '<param name="wmode" value="transparent" />';
-       html += '<embed wmode="transparent" width="' + this.width + '" height="20" ';
+       html += '<embed wmode="transparent" width="' + width + '" height="20" ';
        html += 'src="' + player + '?file=' + url + '&songVolume=90&showDownload=false" ';
        html += 'type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />';
        html += '</object>';
@@ -210,34 +210,34 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
 
 // 视频查看器
 function render_video_viewer(url, identify, serverURL, kwargs) {
-  this.callback = kwargs.callback;
-  if (!this.callback) {
+  var callback = kwargs.callback;
+  if (!callback) {
     ajaxRequest(0, url, 'video', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  this.width = kwargs.width;
-  this.height = kwargs.height;
-  this.ext = kwargs.ext;
+  var width = kwargs.width;
+  var height = kwargs.height;
+  var ext = kwargs.ext;
 
-  if (this.ext == '.swf') {
+  if (ext == '.swf') {
     var html = '<div class="flash-movie hVlog">'
        html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ';
        html += 'codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" ';
-       html += 'width="' + this.width + '" height="' + this.height+ '" id="' + identify + '-swf-player" align="middle">';
+       html += 'width="' + width + '" height="' + height+ '" id="' + identify + '-swf-player" align="middle">';
        html += '<param name="allowScriptAccess" value="sameDomain" />'
        html += '<param name="movie" value="' + url + '" />'
        html += '<param name="quality" value="high" />'
        html += '<param name="bgcolor" value="#ffffff" />'
        html += '<param name="wmode" value="transparent" />'
        html += '<embed id="' + identify + '-swf-player-embed" src="' + url + '" quality="high" wmode="transparent" bgcolor="#ffffff" ';
-       html += 'width="' + this.width + '" height="' + this.width + '" ';
+       html += 'width="' + width + '" height="' + width + '" ';
        html += 'align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" ';
        html += 'pluginspage="http://www.adobe.com/go/getflashplayer" />';
        html += '</object>';
        html += '</div>';
     document.getElementById(identify).innerHTML = html;
   } else {
-    var html = '<a style="display:block; width:' + this.width +'px; height:' + this.height + 'px;" ';
+    var html = '<a style="display:block; width:' + width +'px; height:' + height + 'px;" ';
        html += 'href="' + url + '" id="' + identify + 'player"></a>';
     document.getElementById(identify).innerHTML = html;
     flowplayer(identify + 'player', {src: serverURL + '/edoviewer/flowplayer-3.1.5.swf', wmode: 'opaque'}, {
@@ -263,18 +263,18 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
 }
 
 // 图片查看器
-function render_image_viewer(url, identidy, serverURL, kwargs) {
-  this.callback = kwargs.callback;
-  if (!this.callback) {
+function render_image_viewer(url, identify, serverURL, kwargs) {
+  var callback = kwargs.callback;
+  if (!callback) {
     ajaxRequest(0, url, 'image', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  this.exifURL = kwargs.exifURL;
-  this.ext = kwargs.ext;
+  var exifURL = kwargs.exifURL;
+  var ext = kwargs.ext;
 
   document.getElementById(identify).innerHTML = '<img src="' + url + '">';
 
-  if(this.ext== '.jpg' || this.ext == '.jpeg' || this.ext == '.tiff') {
+  if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
     var fun = "showEXIF('" + exifURL + "', 'image', '" + identify + "', '" + serverURL + "')";
     var html = '<br /><a href="javascript:;"; onclick="' + fun + '" />查看EXIF信息</a>';
        html += '<img src="' + serverURL + '/static/waiting.gif" id="' + identify + '-exif-waiting" style="display:none;">';
@@ -282,7 +282,7 @@ function render_image_viewer(url, identidy, serverURL, kwargs) {
     document.getElementById(identify).innerHTML += html;
   }
 }
-function showEXIF(extURL, type, identify, serverURL) {
+function showEXIF(exifURL, type, identify, serverURL) {
   var exif_table = document.getElementById(identify + '-exif-html').getElementsByTagName('table');
   if(exif_table.length != 0) {
     if (exif_table[0].style.display == 'block') {
@@ -292,23 +292,23 @@ function showEXIF(extURL, type, identify, serverURL) {
     }
   } else {
     document.getElementById(identify + '-exif-waiting').style.display = 'block';
-    ajaxRequest(0, this.exifURL, 'image-exif', identify, serverURL, {}, 'GET');
+    ajaxRequest(0, exifURL, 'image-exif', identify, serverURL, {}, 'GET');
   }
 }
 
 // EXIF 查看器
-function render_exif_viewer(url, identidy, serverURL, kwargs) {
-  this.data = kwargs.data;
+function render_exif_viewer(url, identify, serverURL, kwargs) {
+  var data = kwargs.data;
 
   var html = '<table style="border-spacing:0; line-height:1.5; display:block;">'
-  for(num = 0; num < this.data.length; num ++) {
-    var str = this.data[num]['title'];
-      if (exifTranslate[this.data[num]['title']]) {
-        str = exifTranslate[this.data[num]['title']];
+  for(num = 0; num < data.length; num ++) {
+    var str = data[num]['title'];
+      if (exifTranslate[data[num]['title']]) {
+        str = exifTranslate[data[num]['title']];
       }
       // 不显示不在列表内的
-      if (exifTranslate[this.data[num]['title']]) {
-          html += '<tr><th>'+ str + '</th><td>' + this.data[num]['display'] + '</td></tr>';
+      if (exifTranslate[data[num]['title']]) {
+          html += '<tr><th>'+ str + '</th><td>' + data[num]['display'] + '</td></tr>';
       } else { continue; }
   }
   html += '</table>';

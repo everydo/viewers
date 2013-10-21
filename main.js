@@ -64,7 +64,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-        window.setTimeout(ajaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
+        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, 3000);
         if(type != 'image-exif') {
           document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
         }
@@ -97,7 +97,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-      window.setTimeout(ajaxRequest, 3000, n + 1, ajaxURL, type, identify, serverURL, kwargs, method);
+      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, 3000);
       if (type != 'image-exif') {
         document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600; color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
       }
@@ -186,79 +186,75 @@ function getType(ext) {
 
 
 function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, allowCopy) {
+  var ext = getExt(sourceURL);
+  var type = getType(ext);
+  var dirMD5 = hex_md5(sourceURL) + ext;
 
-  this.serverURL = removeLastSlash(serverURL);
-  this.sourceURL = encodeURL(removeLastSlash(sourceURL));
-  this.identify = identify;
-  this.width = width;
-  this.height = height;
-  this.allowPrint = allowPrint == 'false' || allowPrint == false ? false : true;
-  this.allowCopy = allowCopy == 'false' || allowCopy == false ? false : true;
-
-  this.ext = getExt(sourceURL);
-  this.type = getType(ext);
-  this.dirMD5 = hex_md5(sourceURL) + ext;
+  var serverURL = removeLastSlash(serverURL);
+  var sourceURL = encodeURL(removeLastSlash(sourceURL));
+  var allowPrint = allowPrint == 'false' || allowPrint == false ? false : true;
+  var allowCopy = allowCopy == 'false' || allowCopy == false ? false : true;
 
   // FLASH 查看
-  if(this.type == 'flash') {
+  if(type == 'flash') {
     var kwargs = {
-      width: this.width,
-      height: this.height,
-      allowPrint: this.allowPrint,
-      allowCopy: this.allowCopy
+      width: width,
+      height: height,
+      allowPrint: allowPrint,
+      allowCopy: allowCopy
     };
-    var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_x-shockwave-flash-x/transformed.swf?source=' + this.sourceURL;
-    render_flash_viewer(encodeURL(url), this.identify, this.serverURL, kwargs);
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_x-shockwave-flash-x/transformed.swf?source=' + sourceURL;
+    render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
   // HTML 查看
-  else if (this.type == 'html') {
-    var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.text_html/transformed.html?source=' + this.sourceURL;
+  else if (type == 'html') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.text_html/transformed.html?source=' + sourceURL;
     var kwargs = {
-      ext: this.ext,
-      width: this.width,
-      height: this.height
+      ext: ext,
+      width: width,
+      height: height
     };
-    render_html_viewer(url, this.identify, this.serverURL, kwargs);
+    render_html_viewer(url, identify, serverURL, kwargs);
   }
   // 压缩包查看
-  else if (this.type == 'RAR') {
+  else if (type == 'RAR') {
     var kwargs = {
-      ext: this.ext
+      ext: ext
     };
-    var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_json/transformed.json?source=' + this.sourceURL;
-    render_zip_viewer(url, this.identify, this.serverURL, kwargs);
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_json/transformed.json?source=' + sourceURL;
+    render_zip_viewer(url, identify, serverURL, kwargs);
   }
   // 音频查看
-  else if (this.type == 'audio') {
-    var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + this.sourceURL;
+  else if (type == 'audio') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + sourceURL;
     var kwargs = {
-      ext: this.ext,
-      width: this.width,
-      height: this.height
+      ext: ext,
+      width: width,
+      height: height
     };
-    render_audio_viewer(url, this.identify, this.serverURL, kwargs);
+    render_audio_viewer(url, identify, serverURL, kwargs);
   }
   // 视频查看
-  else if (this.type == 'video') {
-    var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + this.sourceURL;
+  else if (type == 'video') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + sourceURL;
     var kwargs = {
-      ext: this.ext,
-      width: this.width,
-      height: this.height
+      ext: ext,
+      width: width,
+      height: height
     };
-    render_video_viewer(url, this.identify, this.serverURL, kwargs);
+    render_video_viewer(url, identify, serverURL, kwargs);
   }
   // 图片查看
-  else if (this.type == 'image') {
-    var exifURL = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + this.sourceURL;
+  else if (type == 'image') {
+    var exifURL = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + sourceURL;
     var kwargs = {
-      ext: this.ext,
+      ext: ext,
       exifURL: exifURL
     };
-    var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.image_png/image_preview?source=' + this.sourceURL;
-    render_image_viewer(url, this.identidy, this.serverURL, kwargs);
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.image_png/image_preview?source=' + sourceURL;
+    render_image_viewer(url, identify, serverURL, kwargs);
   }
   else {
-    document.getElementById(this.identify).innerHTML = '该文件的预览方式暂没添加上去！';
+    document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
   }
 }
