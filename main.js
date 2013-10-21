@@ -4,9 +4,9 @@ var previewCategory={".doc":"flash",".docx":"flash",".ppt":"flash",".pptx":"flas
 
 /****************************************** Ajax *************************************************/
 
-function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
+function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (n > 29) {
-    if(type != 'image-exif') {
+    if(onlyRequest != true) {
       document.getElementById(identify).innerHTML = '<span style="color:#666;">转换超时，请刷新后重试...</span>';
       return;
     } else {
@@ -29,23 +29,23 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
   }
   xhr.open(method, url, true);
   xhr.send(null);
-  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method)};
+  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method, onlyRequest)};
 }
 
-function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
-  if (type != 'image-exif') {
+function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+  if (onlyRequest != true) {
     document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">加载中请稍候...</span></center>';
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
   if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1) {
-    if(type != 'image-exif') {
+    if(onlyRequest != true) {
       document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
     }
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > 29) {
-        if(type != 'image-exif') {
+        if(onlyRequest != true) {
           document.getElementById(identify).innerHTML = '<span style="color:#666;">转换超时，请刷新后重试...</span>';
           return;
         }
@@ -56,16 +56,16 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
       xdr.open('GET', url);
       xdr.onload = function() {
         if (method == 'GET') {
-            responseSuccess(xdr, url, type, identify, serverURL, kwargs);
+          responseSuccess(xdr, url, type, identify, serverURL, kwargs, onlyRequest);
         }
-        else if (! hasShow) {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
+        else if (!hasShow) {
+          responseSuccess(xdr, url, type, identify, serverURL, kwargs, onlyRequest);
         }
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, 3000);
-        if(type != 'image-exif') {
+        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, 3000);
+        if(onlyRequest != true) {
           document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600;color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
         }
       };
@@ -73,7 +73,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
       function progres() {
         if (hasShow) { return false; }
         if (method == 'HEAD') {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
+          responseSuccess(xdr, url, type, identify, serverURL, kwargs, onlyRequest);
           hasShow = true;
         }
       }
@@ -82,23 +82,23 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
           xdr.send(null);
       } catch(ex) {}
     } else {
-      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method);
+      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
     }
   } else {
-    xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method);
+    xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
   }
 }
 
-function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
+function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (xmlHttp.readyState == 4) {
     if (xmlHttp.status == 200) {
       var url = url.replace(/\&_=.*/, '');
-      responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs);
+      responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs, onlyRequest);
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, 3000);
-      if (type != 'image-exif') {
+      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, 3000);
+      if (onlyRequest != true) {
         document.getElementById(identify).innerHTML = '<center><img src="' + serverURL + '/static/loading.gif"><br /><span style="background:#006600; color:#fff;">转换中请稍候<b>'+(n+1)+'</b>...</span></center>';
       }
     }
@@ -108,9 +108,12 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
   }
 }
 
-function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
-  kwargs['callback'] = true;
+function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs, onlyRequest) {
+  if (onlyRequest == true && type != 'image-exif') {
+    return;
+  }
 
+  kwargs['callback'] = true;
   if (type == 'html') {
     render_html_viewer(url, identify, serverURL, kwargs);
   }
@@ -185,6 +188,8 @@ function getType(ext) {
 /****************************************** END **************************************************/
 
 
+/****************************************** API **************************************************/
+
 function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, allowCopy) {
   var ext = getExt(sourceURL);
   var type = getType(ext);
@@ -258,3 +263,63 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
     document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
   }
 }
+
+function prepare_for_view(sourceURL, serverURL) {
+  var ext = getExt(sourceURL);
+  var type = getType(ext);
+  var dirMD5 = hex_md5(sourceURL) + ext;
+
+  var serverURL = removeLastSlash(serverURL);
+  var sourceURL = encodeURL(removeLastSlash(sourceURL));
+
+  var start = 29;
+  var items = new Array();
+
+  // FLASH 转换
+  if(type == 'flash') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_x-shockwave-flash-x/transformed.swf?source=' + sourceURL;
+    items.push(url);
+    var htmlURL = serverURL + '/cache/files/' + dirMD5 + '/.frs.text_html/transformed.html?source=' + sourceURL;
+    items.push(htmlURL);
+  }
+  // HTML 转换
+  else if (type == 'html') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.text_html/transformed.html?source=' + sourceURL;
+    items.push(url);
+  }
+  // 压缩包转换
+  else if (type == 'RAR') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_json/transformed.json?source=' + sourceURL;
+    items.push(url);
+  }
+  // 音频转换
+  else if (type == 'audio') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + sourceURL;
+    items.push(url);
+  }
+  // 视频转换
+  else if (type == 'video') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + sourceURL;
+    items.push(url);
+  }
+  // 图片转换
+  else if (type == 'image') {
+    var url = serverURL + '/cache/files/' + dirMD5 + '/.frs.image_png/image_preview?source=' + sourceURL;
+    items.push(url);
+
+    if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
+      var exifURL = serverURL + '/cache/files/' + dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + sourceURL;
+      items.push(exifURL);
+    }
+  }
+  else {
+    return;
+  }
+
+  for (var x = 0; x < items.length; x ++) {
+    ajaxRequest(start, items[x], null, null, serverURL, null, 'HEAD', true);
+  }
+  return;
+}
+
+/****************************************** end **************************************************/

@@ -292,7 +292,7 @@ function showEXIF(exifURL, type, identify, serverURL) {
     }
   } else {
     document.getElementById(identify + '-exif-waiting').style.display = 'block';
-    ajaxRequest(0, exifURL, 'image-exif', identify, serverURL, {}, 'GET');
+    ajaxRequest(0, exifURL, 'image-exif', identify, serverURL, {}, 'GET', true);
   }
 }
 
