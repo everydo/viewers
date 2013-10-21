@@ -55,5 +55,5 @@ viewers
 上传文件后，打开查看器，如果文档没有转换过，则会发起转换。
 如果希望通过程序主动发起转换（而不是查看器），可以直接调用这个API：
 
-        transform(url, serverURL, 'swfx')
-        transform(url, serverURL, 'html')
+        transform(url, serverURL)
+        
