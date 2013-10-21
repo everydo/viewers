@@ -29,7 +29,7 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
   }
   xhr.open(method, url, true);
   xhr.send(null);
-  xhr.onreadystatechange = function(){callback(xhr, n, url, type, identify, serverURL, kwargs, method)};
+  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method)};
 }
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
@@ -89,7 +89,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
   }
 }
 
-function callback(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
+function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
   if (xmlHttp.readyState == 4) {
     if (xmlHttp.status == 200) {
       var url = url.replace(/\&_=.*/, '');
@@ -109,7 +109,7 @@ function callback(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
 }
 
 function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
-  kwargs.callback = true;
+  kwargs['callback'] = true;
 
   if (type == 'html') {
     render_html_viewer(url, identify, serverURL, kwargs);
@@ -172,7 +172,7 @@ function getExt(url) {
 
 // 得到预览类型
 function getType(ext) {
-  var type = previewCategory[this.ext];
+  var type = previewCategory[ext];
   if (type == 'flash') {
     // 浏览器没装FLASH采用HTML预览
     if (swfobject.getFlashPlayerVersion()['major'] < 9) {

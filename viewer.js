@@ -8,8 +8,8 @@ var exifTranslate={XResolution:"影像水平分辨率",YResolution:"影像垂直
 
 // HTML查看器
 function render_html_viewer(url, identify, serverURL, kwargs) {
-  this.callbock = kwargs.callback;
-  if (!this.callbock) {
+  this.callback = kwargs.callback;
+  if (!this.callback) {
     ajaxRequest(0, url, 'html', identify, serverURL, kwargs, 'HEAD');
     return;
   }
@@ -108,8 +108,8 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 
 // 压缩包查看器
 function render_zip_viewer(url, identify, serverURL, kwargs) {
-  this.callbock = kwargs.callback;
-  if (!this.callbock) {
+  this.callback = kwargs.callback;
+  if (!this.callback) {
     ajaxRequest(0, url, 'RAR', identify, serverURL, kwargs, 'GET');
     return;
   }
@@ -176,8 +176,8 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
 
 // 音频查看器
 function render_audio_viewer(url, identify, serverURL, kwargs) {
-  this.callbock = kwargs.callback;
-  if (!this.callbock) {
+  this.callback = kwargs.callback;
+  if (!this.callback) {
     ajaxRequest(0, url, 'audio', identify, serverURL, kwargs, 'HEAD');
     return;
   }
@@ -210,8 +210,8 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
 
 // 视频查看器
 function render_video_viewer(url, identify, serverURL, kwargs) {
-  this.callbock = kwargs.callback;
-  if (!this.callbock) {
+  this.callback = kwargs.callback;
+  if (!this.callback) {
     ajaxRequest(0, url, 'video', identify, serverURL, kwargs, 'HEAD');
     return;
   }
@@ -264,8 +264,8 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
 
 // 图片查看器
 function render_image_viewer(url, identidy, serverURL, kwargs) {
-  this.callbock = kwargs.callback;
-  if (!this.callbock) {
+  this.callback = kwargs.callback;
+  if (!this.callback) {
     ajaxRequest(0, url, 'image', identify, serverURL, kwargs, 'HEAD');
     return;
   }
