@@ -8,10 +8,16 @@ var exifTranslate={XResolution:"影像水平分辨率",YResolution:"影像垂直
 
 // HTML查看器
 function render_html_viewer(url, identify, serverURL, kwargs) {
+  this.callbock = kwargs.callback;
+  if (!this.callbock) {
+    ajaxRequest(0, url, 'html', identify, serverURL, kwargs, 'HEAD');
+    return;
+  }
   this.width = kwargs.width;
   this.height = kwargs.height;
 
-  var html = '<iframe style="border:1px solid #c3c3c3; width:'+ this.width +'; height:' + this.height + '" src="' + url + '"></iframe>';
+  var html = '<iframe name="iframe-' + identify+ '" width="'+ this.width +'" height="' + this.height + '" ';
+     html += 'style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
   document.getElementById(identify).innerHTML = html;
 }
 
@@ -21,13 +27,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
   this.height = kwargs.height;
   this.allowPrint = kwargs.allowPrint;
   this.allowCopy = kwargs.allowCopy;
-  this.htmlURL = kwargs.htmlURL;
 
-  // 浏览器没装FLASH采用HTML预览
-  if (swfobject.getFlashPlayerVersion()['major'] < 9) {
-    ajaxRequest(0, this.htmlURL, 'html', identify, serverURL, kwargs, 'HEAD');
-    return;
-  }
   document.getElementById(identify).innerHTML = '请下载最新版本的flash播放器安装后再刷新页面查看';
   var flashvars = {
     swf_file: url,
@@ -108,6 +108,11 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 
 // 压缩包查看器
 function render_zip_viewer(url, identify, serverURL, kwargs) {
+  this.callbock = kwargs.callback;
+  if (!this.callbock) {
+    ajaxRequest(0, url, 'RAR', identify, serverURL, kwargs, 'GET');
+    return;
+  }
   this.data = kwargs.data;
 
   function getChildHTML(children) {
@@ -148,19 +153,19 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
         }
       }
       var size = '';
-      var download = ' <a href="' + download_url + '" title="下载"><img src="' + serverURL + '/static/download.gif">下载</a>';
+      var download = '<a href="' + download_url + '" title="下载"><img src="' + serverURL + '/static/download.gif">下载</a>';
       if (current[child]['size']) {
         size = getDisplaySize(current[child]['size']);
       }
       if (current[child]['type'] == 'folder') {
-        html += '<li style="list-style-type:none;"><img src="' + serverURL + '/static/folder.gif" style="vertical-align:middle"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
+        html += '<li style="list-style-type:none;"><img src="' + serverURL + '/static/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
         var priview_url = serverURL + '/@@view?' + href_url[1] + '&path=' + url_1 + 'decompress' + encodeURL(path);
         var splitname = current[child]['name'].split('.');
         if (supportExt[(splitname[splitname.length-1]).toLowerCase()]){
-          html += '<table style="margin:0; width:100%"><tr><td width="53%"><a href="' + priview_url + '" target="_blank" title="预览">' + current[child]['name'] +'</a></td>'+ children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
+          html += '<table style="margin:0; width:100%;"><tr><td width="53%"><a href="' + priview_url + '" target="_blank" title="预览">' + current[child]['name'] +'</a></td>'+ children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
         } else {
-          html += '<table style="margin:0; width:100%"><tr><td width="53%">' + current[child]['name'] + '</td>' + children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
+          html += '<table style="margin:0; width:100%;"><tr><td width="53%">' + current[child]['name'] + '</td>' + children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
         }
       }
     }
@@ -171,6 +176,11 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
 
 // 音频查看器
 function render_audio_viewer(url, identify, serverURL, kwargs) {
+  this.callbock = kwargs.callback;
+  if (!this.callbock) {
+    ajaxRequest(0, url, 'audio', identify, serverURL, kwargs, 'HEAD');
+    return;
+  }
   this.width = kwargs.width;
   this.height = kwargs.height;
   this.ext = kwargs.ext;
@@ -200,6 +210,11 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
 
 // 视频查看器
 function render_video_viewer(url, identify, serverURL, kwargs) {
+  this.callbock = kwargs.callback;
+  if (!this.callbock) {
+    ajaxRequest(0, url, 'video', identify, serverURL, kwargs, 'HEAD');
+    return;
+  }
   this.width = kwargs.width;
   this.height = kwargs.height;
   this.ext = kwargs.ext;
@@ -222,7 +237,8 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
        html += '</div>';
     document.getElementById(identify).innerHTML = html;
   } else {
-    var html = '<a style="display:block;width:'+ this.width +'px;height:' + this.height + 'px" href="' + url + '" id="' + identify + 'player"></a>';
+    var html = '<a style="display:block; width:' + this.width +'px; height:' + this.height + 'px;" ';
+       html += 'href="' + url + '" id="' + identify + 'player"></a>';
     document.getElementById(identify).innerHTML = html;
     flowplayer(identify + 'player', {src: serverURL + '/edoviewer/flowplayer-3.1.5.swf', wmode: 'opaque'}, {
       clip: {
@@ -248,6 +264,11 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
 
 // 图片查看器
 function render_image_viewer(url, identidy, serverURL, kwargs) {
+  this.callbock = kwargs.callback;
+  if (!this.callbock) {
+    ajaxRequest(0, url, 'image', identify, serverURL, kwargs, 'HEAD');
+    return;
+  }
   this.exifURL = kwargs.exifURL;
   this.ext = kwargs.ext;
 
@@ -256,7 +277,7 @@ function render_image_viewer(url, identidy, serverURL, kwargs) {
   if(this.ext== '.jpg' || this.ext == '.jpeg' || this.ext == '.tiff') {
     var fun = "showEXIF('" + exifURL + "', 'image', '" + identify + "', '" + serverURL + "')";
     var html = '<br /><a href="javascript:;"; onclick="' + fun + '" />查看EXIF信息</a>';
-       html += '<img src="' + serverURL + '/static/waiting.gif" id="' + identify + '-exif-waiting" style="display:none">';
+       html += '<img src="' + serverURL + '/static/waiting.gif" id="' + identify + '-exif-waiting" style="display:none;">';
        html += '<div id="' + identify + '-exif-html"></div>';
     document.getElementById(identify).innerHTML += html;
   }
@@ -279,7 +300,7 @@ function showEXIF(extURL, type, identify, serverURL) {
 function render_exif_viewer(url, identidy, serverURL, kwargs) {
   this.data = kwargs.data;
 
-  var html = '<table style="border-spacing:0; line-height:1.5; display:block">'
+  var html = '<table style="border-spacing:0; line-height:1.5; display:block;">'
   for(num = 0; num < this.data.length; num ++) {
     var str = this.data[num]['title'];
       if (exifTranslate[this.data[num]['title']]) {

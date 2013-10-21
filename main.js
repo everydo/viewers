@@ -46,7 +46,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
     if (version > 8.0 || version == 8.0) {
       if (n > 29) {
         if(type != 'image-exif') {
-          document.getElementById(identify).innerHTML = '<span style="color:#666">转换超时，请刷新后重试...</span>';
+          document.getElementById(identify).innerHTML = '<span style="color:#666;">转换超时，请刷新后重试...</span>';
           return;
         }
         else
@@ -109,6 +109,8 @@ function callback(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
 }
 
 function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
+  kwargs.callback = true;
+
   if (type == 'html') {
     render_html_viewer(url, identify, serverURL, kwargs);
   }
@@ -163,9 +165,21 @@ function getExt(url) {
     var ext = ('.' + endChar.split('.')[endChar.split('.').length-1]).toLowerCase();
   } else {
     var splitExt = (endChar.split('.')[endChar.split('.').length-1]).split('?');
-    var ext = ('.' + splitSuffix_0[0]).toLowerCase();
+    var ext = ('.' + splitExt[0]).toLowerCase();
   }
   return ext;
+}
+
+// 得到预览类型
+function getType(ext) {
+  var type = previewCategory[this.ext];
+  if (type == 'flash') {
+    // 浏览器没装FLASH采用HTML预览
+    if (swfobject.getFlashPlayerVersion()['major'] < 9) {
+        type = 'html';
+    }
+  }
+  return type;
 }
 
 /****************************************** END **************************************************/
@@ -182,12 +196,12 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
   this.allowCopy = allowCopy == 'false' || allowCopy == false ? false : true;
 
   this.ext = getExt(sourceURL);
+  this.type = getType(ext);
   this.dirMD5 = hex_md5(sourceURL) + ext;
+
   // FLASH 查看
-  if(previewCategory[this.ext] == 'flash') {
-    var htmlURL = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.text_html/transformed.html?source=' + this.sourceURL;
+  if(this.type == 'flash') {
     var kwargs = {
-      htmlURL: htmlURL,
       width: this.width,
       height: this.height,
       allowPrint: this.allowPrint,
@@ -197,54 +211,52 @@ function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, a
     render_flash_viewer(encodeURL(url), this.identify, this.serverURL, kwargs);
   }
   // HTML 查看
-  else if (previewCategory[this.ext] == 'html') {
+  else if (this.type == 'html') {
     var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.text_html/transformed.html?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
       width: this.width,
-      height: this.height,
-      allowPrint: this.allowPrint,
-      allowCopy: this.allowCopy
+      height: this.height
     };
-    ajaxRequest(0, url, 'html', this.identify, this.serverURL, kwargs, 'HEAD');
+    render_html_viewer(url, this.identify, this.serverURL, kwargs);
   }
   // 压缩包查看
-  else if (previewCategory[this.ext] == 'RAR') {
+  else if (this.type == 'RAR') {
     var kwargs = {
       ext: this.ext
     };
     var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_json/transformed.json?source=' + this.sourceURL;
-    ajaxRequest(0, url, 'RAR', this.identify, this.serverURL, kwargs, 'GET');
+    render_zip_viewer(url, this.identify, this.serverURL, kwargs);
   }
   // 音频查看
-  else if (previewCategory[this.ext] == 'audio') {
+  else if (this.type == 'audio') {
     var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.audio_x-mpeg/transformed.mp3?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
       width: this.width,
       height: this.height
     };
-    ajaxRequest(0, url, 'audio', this.identify, this.serverURL, kwargs, 'HEAD');
+    render_audio_viewer(url, this.identify, this.serverURL, kwargs);
   }
   // 视频查看
-  else if (previewCategory[this.ext] == 'video') {
+  else if (this.type == 'video') {
     var url = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.video_x-flv/transformed.flv?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
       width: this.width,
       height: this.height
     };
-    ajaxRequest(0, url, 'video', this.identify, this.serverURL, kwargs, 'HEAD');
+    render_video_viewer(url, this.identify, this.serverURL, kwargs);
   }
   // 图片查看
-  else if (previewCategory[this.ext] == 'image') {
+  else if (this.type == 'image') {
     var exifURL = this.serverURL + '/cache/files/' + this.dirMD5 + '/.frs.application_exif-x-json/transformed.json?source=' + this.sourceURL;
     var kwargs = {
       ext: this.ext,
       exifURL: exifURL
     };
     var url = serverURL + '/cache/files/' + this.dirMD5 + '/.frs.image_png/image_preview?source=' + this.sourceURL;
-    ajaxRequest(0, url, 'image', this.identify, this.serverURL, kwargs, 'HEAD');
+    render_image_viewer(url, this.identidy, this.serverURL, kwargs);
   }
   else {
     document.getElementById(this.identify).innerHTML = '该文件的预览方式暂没添加上去！';
