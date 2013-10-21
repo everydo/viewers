@@ -18,12 +18,24 @@
     
         <script type="text/javascript">
             var serverURL = 'http://viewer.everydo.com:9870';
+            
+            // edo_viewer API 
             edo_viewer(serverURL, 'http://download.zopen.cn/demo/edo-viewer.ppt', 'doc-viewer-01', 700, 537);
             edo_viewer(serverURL, 'http://download.zopen.cn/demo/everydo-test-archive-file.rar', 'doc-viewer-02');
             edo_viewer(serverURL, 'http://download.zopen.cn/demo/demo.wav', 'doc-viewer-03', 250);
             edo_viewer(serverURL, 'http://download.zopen.cn/demo/mm[1].mpg', 'doc-viewer-04', 700, 600);
             edo_viewer(serverURL, 'http://download.zopen.cn/demo/application.py', 'doc-viewer-05', 700, 500);
             edo_viewer(serverURL, 'http://download.zopen.cn/demo/exif.jpg', 'doc-viewer-06');
+            
+            // render_viewer 
+            // var sourceURL ='http://download.zopen.cn/demo/edo-viewer.ppt';
+            // var dirMD5 = hex_md5(sourceURL) + '.ppt';
+            // var url = getURL('flash', serverURL, dirMD5, sourceURL);
+            // var kwargs = {width:700, height:537, allowPrint:false, allowCopy:false};
+            // render_flash_viewer(url, 'doc-viewer-01', serverURL, kwargs);
+            
+            // prepare_for_view API
+            // prepare_for_view(sourceURL, serverURL);
         </script>
     </body>
 </html>
