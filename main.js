@@ -316,7 +316,6 @@ function prepare_for_view(sourceURL, serverURL) {
   for (var x = 0; x < items.length; x ++) {
     ajaxRequest(start, items[x], null, null, serverURL, null, 'HEAD', true);
   }
-  return;
 }
 
 /****************************************** end **************************************************/
