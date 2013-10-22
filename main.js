@@ -181,8 +181,8 @@ function getExt(url) {
 function getType(ext) {
   var type = previewCategory[ext];
   if (type == 'flash') {
-    // 浏览器没装FLASH采用HTML预览
-    if (swfobject.getFlashPlayerVersion()['major'] < 9) {
+    var MobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
+    if (swfobject.getFlashPlayerVersion()['major'] < 9 || mobileAccess) {
       type = 'html';
     }
   }
