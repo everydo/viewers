@@ -181,7 +181,7 @@ function getExt(url) {
 function getType(ext) {
   var type = previewCategory[ext];
   if (type == 'flash') {
-    var MobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
+    var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
     if (swfobject.getFlashPlayerVersion()['major'] < 9 || mobileAccess) {
       type = 'html';
     }
