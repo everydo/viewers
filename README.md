@@ -14,43 +14,51 @@ viewers
 - 是否允许打印
 - 设置水印信息
 
-其中水印信息包括：
+可以简单的如下调用
 
-1. 指定文字内容和图片路径
-2. 指定位置（平铺、左上角等）
-3. 指定字体大小、图片大小
-4. 指定文字颜色、字体（粗体、斜体等）
-5. 指定文字、图片的透明度
+    edo_viewer(serverURL, sourceURL, identify, kwargs)
 
-具体包括的查看器：
+kwargs是一个展示参数，包括：
+
+- width：宽度
+- height：高度
+- allowPrint：是否运行打印
+- allowCopy：是否运行复制
+- waterprint_text: 水印文字
+- waterprint_size: 水印字体大小，默认12
+- waterprint_color：水印颜色，默认#ff0000
+- waterprint_x: x方向位置，默认：500
+- waterprint_y: y方向位置，默认：500
+
+也可以单独调用查看器：
 
 - 纯文本查看器
 
-            render_text_viewer(url, identidy, serverURL, kwargs)
+            render_text_viewer(sourceURL, identidy, serverURL, kwargs)
 
 - 图片查看器
 
-            render_image_viwer(url, identidy, serverURL, kwargs)
+            render_image_viwer(sourceURL, identidy, serverURL, kwargs)
 
 - html查看器
 
-            render_html_viwer(url, identidy, serverURL, kwargs)
+            render_html_viwer(sourceURL, identidy, serverURL, kwargs)
 
 - 压缩包查看器
 
-            render_zip_viewer(url, identidy, serverURL, kwargs)
+            render_zip_viewer(sourceURL, identidy, serverURL, kwargs)
 
 - 音频查看器
 
-            render_audio_viewer(url, identidy, serverURL, kwargs)
+            render_audio_viewer(sourceURL, identidy, serverURL, kwargs)
 
 - 视频查看器
 
-            render_video_viewer(url, identidy, serverURL, kwargs)
+            render_video_viewer(sourceURL, identidy, serverURL, kwargs)
 
 - 易度的pdf转换swfx查看器
 
-            render_flash_viewer(url, identidy, serverURL, kwargs)
+            render_flash_viewer(sourceURL, identidy, serverURL, kwargs)
 
 上传文件后，打开查看器，如果文档没有转换过，则会发起转换。
 如果希望通过程序主动发起转换（而不是查看器），可以直接调用这个API：
