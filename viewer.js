@@ -25,16 +25,26 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
 function render_flash_viewer(url, identify, serverURL, kwargs) {
   var width = kwargs.width;
   var height = kwargs.height;
-  var allowPrint = kwargs.allowPrint;
-  var allowCopy = kwargs.allowCopy;
+  var allow_print = kwargs.allow_print == 'false' || kwargs.allow_print == false ? false : true;
+  var allow_copy = kwargs.allow_copy == 'false' || kwargs.allow_copy == false ? false : true;
 
   document.getElementById(identify).innerHTML = '请下载最新版本的flash播放器安装后再刷新页面查看';
-  var flashvars = {
-    swf_file: url,
-    allow_print: allowPrint,
-    allow_copy: allowCopy,
-    allow_debug: false
-  };
+
+  var flashvars = {};
+    flashvars['swf_file'] = url;
+    flashvars['allow_print'] = allow_print;
+    flashvars['allow_copy'] = allow_copy;
+    flashvars['allow_debug'] = false;
+
+  // 水印参数
+  if (kwargs.waterprint_text != undefined) {
+    flashvars['waterprint_text'] = kwargs.waterprint_text;
+    flashvars['waterprint_size'] = kwargs.waterprint_size;
+    flashvars['waterprint_color'] = kwargs.waterprint_color;
+    flashvars['waterprint_x'] = kwargs.waterprint_x;
+    flashvars['waterprint_y'] = kwargs.waterprint_y;
+  }
+
   var params = {
     menu: false,
     bgcolor: '#efefef',

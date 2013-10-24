@@ -214,74 +214,48 @@ function getURL(type, serverURL, dirMD5, sourceURL) {
 
 /****************************************** API **************************************************/
 
-function edo_viewer(serverURL, sourceURL, identify, width, height, allowPrint, allowCopy) {
+function edo_viewer(serverURL, sourceURL, identify, kwargs) {
   var ext = getExt(sourceURL);
   var type = getType(ext);
   var dirMD5 = hex_md5(sourceURL) + ext;
 
+  if (typeof(kwargs) != typeof({})) { var kwargs = {}; }
+
   var serverURL = removeLastSlash(serverURL);
   var sourceURL = encodeURL(removeLastSlash(sourceURL));
-  var allowPrint = allowPrint == 'false' || allowPrint == false ? false : true;
-  var allowCopy = allowCopy == 'false' || allowCopy == false ? false : true;
 
   if (type == undefined) {
     document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
     return;
   } else {
+    kwargs['ext'] = ext;
     var url = getURL(type, serverURL, dirMD5, sourceURL);
   }
 
   // FLASH 查看
   if(type == 'flash') {
-    var kwargs = {
-      width: width,
-      height: height,
-      allowPrint: allowPrint,
-      allowCopy: allowCopy
-    };
     render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
   // HTML 查看
   else if (type == 'html') {
-    var kwargs = {
-      ext: ext,
-      width: width,
-      height: height
-    };
     render_html_viewer(url, identify, serverURL, kwargs);
   }
   // 压缩包查看
   else if (type == 'RAR') {
-    var kwargs = {
-      ext: ext
-    };
     render_zip_viewer(url, identify, serverURL, kwargs);
   }
   // 音频查看
   else if (type == 'audio') {
-    var kwargs = {
-      ext: ext,
-      width: width,
-      height: height
-    };
     render_audio_viewer(url, identify, serverURL, kwargs);
   }
   // 视频查看
   else if (type == 'video') {
-    var kwargs = {
-      ext: ext,
-      width: width,
-      height: height
-    };
     render_video_viewer(url, identify, serverURL, kwargs);
   }
   // 图片查看
   else if (type == 'image') {
     var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
-    var kwargs = {
-      ext: ext,
-      exifURL: exifURL
-    };
+    kwargs['exifURL'] = exifURL;
     render_image_viewer(url, identify, serverURL, kwargs);
   }
 }
