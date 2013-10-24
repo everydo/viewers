@@ -22,8 +22,8 @@ kwargs是一个展示参数，包括：
 
 - width：宽度
 - height：高度
-- allowPrint：是否运行打印
-- allowCopy：是否运行复制
+- allowPrint：是否允许打印
+- allowCopy：是否允许复制
 - waterprint_text: 水印文字
 - waterprint_size: 水印字体大小，默认12
 - waterprint_color：水印颜色，默认#ff0000
