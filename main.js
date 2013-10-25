@@ -2,7 +2,7 @@
 var previewCategory = {".doc":"flash",".docx":"flash",".ppt":"flash",".pptx":"flash",".pdf":"flash",".rtf":"flash",".wps":"flash",".et":"flash",".dps":"flash",".odt":"flash",".odp":"flash",".ott":"flash",".ots":"flash",".otp":"flash",".vsd":"flash",".vss":"flash",".vst":"flash",".xls":"html",".xlsx":"html",".mht":"html",".html":"html",".htm":"html",".txt":"html",".rst":"html",".xml":"html",".css":"html",".csv":"html",".java":"html",".c":"html",".cpp":"html",".jsp":"html",".asp":"html",".php":"html",".py":"html",".as":"html",".sh":"html",".rar":"RAR",".zip":"RAR",".tar":"RAR",".tgz":"RAR",".gz":"RAR",".mp3":"audio",".wma":"audio",".rm":"audio",".wav":"audio",".mid":"audio",".avi":"video",".rmvb":"video",".rmvb":"video",".mov":"video",".mp4":"video",".swf":"video",".flv":"video",".mpg":"video",".ram":"video",".wmv":"video",".m4v":"video",".3gp":"video",".png":"image",".gif":"image",".jpg":"image",".jpeg":"image",".bmp":"image",".tiff":"image",".ppm":"image",".dwg":"image"};
 
 // 重试次数
-var retryCount = 90;
+var retryCount = 200;
 // 间隔时间(秒)
 var intervalSecond = 3;
 
