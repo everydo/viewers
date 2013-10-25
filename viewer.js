@@ -16,8 +16,17 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
   var width = kwargs.width;
   var height = kwargs.height;
 
-  var html = '<iframe name="iframe-' + identify + '" width="'+ width +'" height="' + height + '" ';
-     html += 'style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
+  var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
+  if (mobileAccess) {
+    var html = '<div overflow:scroll; -webkit-overflow-scrolling:touch; width:'+ width + 'px; height:' + height + 'px>';
+  } else {
+    var html = '';
+  }
+  var html += '<iframe name="iframe-' + identify + '" width="'+ width +'" height="' + height + '" ';
+      html += 'style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
+  if (mobileAccess) {
+    html += '</div>';
+  }
   document.getElementById(identify).innerHTML = html;
 }
 
