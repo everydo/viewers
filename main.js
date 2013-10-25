@@ -1,15 +1,20 @@
 // 文档预览方式
 var previewCategory = {".doc":"flash",".docx":"flash",".ppt":"flash",".pptx":"flash",".pdf":"flash",".rtf":"flash",".wps":"flash",".et":"flash",".dps":"flash",".odt":"flash",".odp":"flash",".ott":"flash",".ots":"flash",".otp":"flash",".vsd":"flash",".vss":"flash",".vst":"flash",".xls":"html",".xlsx":"html",".mht":"html",".html":"html",".htm":"html",".txt":"html",".rst":"html",".xml":"html",".css":"html",".csv":"html",".java":"html",".c":"html",".cpp":"html",".jsp":"html",".asp":"html",".php":"html",".py":"html",".as":"html",".sh":"html",".rar":"RAR",".zip":"RAR",".tar":"RAR",".tgz":"RAR",".gz":"RAR",".mp3":"audio",".wma":"audio",".rm":"audio",".wav":"audio",".mid":"audio",".avi":"video",".rmvb":"video",".rmvb":"video",".mov":"video",".mp4":"video",".swf":"video",".flv":"video",".mpg":"video",".ram":"video",".wmv":"video",".m4v":"video",".3gp":"video",".png":"image",".gif":"image",".jpg":"image",".jpeg":"image",".bmp":"image",".tiff":"image",".ppm":"image",".dwg":"image"};
 
+// 重试次数
+var retryCount = 90;
+// 间隔时间(秒)
+var intervalSecond = 3;
+
 // 文档转换提示
 var timeoutError = '转换超时，请刷新后重试...';
 var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/loading.gif">';}
-var conversionFunc = function(serverURL, n){return '转换中请稍候' + (n + 1) + '/30 <img src="' + serverURL + '/static/loading.gif">';}
+var conversionFunc = function(serverURL, n){return '转换中请稍候' + (n + 1) + '/' + retryCount + ' <img src="' + serverURL + '/static/loading.gif">';}
 
 /****************************************** Ajax *************************************************/
 
 function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
-  if (n > 29) {
+  if (n > retryCount - 1) {
     if(onlyRequest != true) {
       document.getElementById(identify).innerHTML = timeoutError;
       return;
@@ -48,7 +53,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
     }
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
-      if (n > 29) {
+      if (n > retryCount - 1) {
         if(onlyRequest != true) {
           document.getElementById(identify).innerHTML = timeoutError;
           return;
@@ -68,7 +73,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, 3000);
+        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
         if(onlyRequest != true) {
           document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
         }
@@ -101,7 +106,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, 3000);
+      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
       if (onlyRequest != true) {
         document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
       }
@@ -268,7 +273,7 @@ function prepare_for_view(sourceURL, serverURL) {
   var serverURL = removeLastSlash(serverURL);
   var sourceURL = encodeURL(removeLastSlash(sourceURL));
 
-  var start = 29;
+  var start = retryCount - 1;
   var items = new Array();
 
   if (type == undefined) {
