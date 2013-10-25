@@ -18,7 +18,7 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
 
   var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
   if (mobileAccess) {
-    var html = '<div overflow:scroll; -webkit-overflow-scrolling:touch; width:'+ width + 'px; height:' + height + 'px>';
+    var html = '<div style="overflow:scroll; -webkit-overflow-scrolling:touch; width:'+ width + 'px; height:' + height + 'px">';
   } else {
     var html = '';
   }
