@@ -22,8 +22,7 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
   } else {
     var html = '';
   }
-  html += '<iframe width="' + width + '" height="' + height + '" ';
-  html += 'style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
+  html += '<iframe width="' + width + '" height="' + height + '" style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
   if (mobileAccess) {
     html += '</div>';
   }
