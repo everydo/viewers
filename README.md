@@ -25,10 +25,10 @@ kwargs是一个展示参数，包括：
 - allowPrint：是否允许打印
 - allowCopy：是否允许复制
 - waterprint_text: 水印文字
-- waterprint_size: 水印字体大小，默认12
-- waterprint_color：水印颜色，默认#ff0000
-- waterprint_x: x方向位置，默认：500
-- waterprint_y: y方向位置，默认：500
+- waterprint_size: 水印字体大小
+- waterprint_color：水印颜色
+- waterprint_x: x方向位置
+- waterprint_y: y方向位置
 
 也可以单独调用查看器：
 
@@ -64,4 +64,3 @@ kwargs是一个展示参数，包括：
 如果希望通过程序主动发起转换（而不是查看器），可以直接调用这个API：
 
         prepare_for_view(sourceURL, serverURL)
-        
