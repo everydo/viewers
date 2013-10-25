@@ -202,7 +202,7 @@ function getURL(type, serverURL, dirMD5, sourceURL) {
     'RAR': '.frs.application_json/transformed.json',
     'audio': '.frs.audio_x-mpeg/transformed.mp3',
     'video': '.frs.video_x-flv/transformed.flv',
-    'image': '.frs.image_png/image_preview',
+    'image': '.frs.image_png/image_large',
     'image-exif': '.frs.application_exif-x-json/transformed.json'
   }
   var pattern = patterns[type];
