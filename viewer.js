@@ -70,9 +70,9 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
   var setInt = self.setInterval(readyWheel, 50);
   function readyWheel() {
     if (document.getElementById(identify).tagName == 'OBJECT') {
-	  wheelSetup(); 
-	  window.clearInterval(setInt);
-	}    
+      wheelSetup(); 
+      window.clearInterval(setInt);
+    }   
   }
   function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
