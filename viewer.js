@@ -1,5 +1,6 @@
 // 压缩包内能预览的文件后缀
 var supportExt = {doc:!0,docx:!0,xls:!0,xlsx:!0,ppt:!0,pps:!0,pos:!0,pptx:!0,rtf:!0,wps:!0,et:!0,dps:!0,odt:!0,odp:!0,ott:!0,ots:!0,otp:!0,mht:!0,html:!0,htm:!0,txt:!0,rst:!0,xml:!0,css:!0,csv:!0,java:!0,c:!0,cpp:!0,jsp:!0,asp:!0,php:!0,py:!0,as:!0,sh:!0,png:!0,gif:!0,jpg:!0,jpeg:!0,bmp:!0,tiff:!0,ppm:!0,dwg:!0,mp3:!0,wma:!0,rm:!0,wav:!0,mid:!0,avi:!0,rmvb:!0,rmvb:!0,mov:!0,mp4:!0,swf:!0,flv:!0,mpg:!0,ram:!0,wmv:!0,m4v:!0,"3gp":!0,rar:!0,zip:!0,tar:!0,tgz:!0,gz:!0,pdf:!0};
+
 // EXIF 翻译
 var exifTranslate = {XResolution:"影像水平分辨率",YResolution:"影像垂直分辨率",ResolutionUnit:"分辨率单位",Orientation:"方向",ExifOffset:"Exif信息位置",ColorSpace:"影像色域空间",DateTime:"文件修改时间",ExposureTime:"曝光时间",FNumber:"光圈值",ISOSpeedRatings:"ISO速度",CompressedBitsPerPixel:"影像压缩模式",ExposureBiasValue:"曝光补偿",ExposureBiasValue:"最大光圈",MeteringMode:"测光模式",LightSource:"光源",Flash:"闪光灯",FocalLength:"焦距",FlashpixVersion:"支持位图的版本",PixelXDimension:"有效图像宽度",PixelYDimension:"有效图像高度",FileSource:"源文件",SceneType:"场景类型",CustomRendered:"自定义图像处理",ExposureMode:"曝光模式",WhiteBalance:"白平衡",DigitalZoomRatio:"数位变焦倍数",FocalLengthln38mmFilm:"35毫米焦距",SceneCaptureType:"取景模式",GainControl:"增益控制",Contrast:"对比度",Saturation:"饱和度",Sharpness:"锐度",SubjectDistanceRange:"主体距离范围",ExifImageWidth:"图像宽度",ExifImageLength:"图像高度",Compression:"压缩",Make:"制造厂商",Model:"相机型号",ApertureValue:"光圈数",ComponentsConfiguration:"图像构造",DateTimeDigitized:"数字化时间",DateTimeOriginal:"创建时间",ExposureProgram:"曝光程序",FlashPixVersion:"FlashPix版本",YCbCrPositioning:"色相定位",ExifVersion:"Exif版本",FirmwareVersion:"Firmware版本",Software:"软件名称",OwnerName:"OwnerName",ShutterSpeedValue:"ShutterSpeedValue",FocalPlaneResolutionUnit:"FocalPlaneResolutionUnit",FocalPlaneXResolution:"FocalPlaneXResolution",FocalPlaneYResolution:"FocalPlaneYResolution",InteroperabilityOffset:"InteroperabilityOffset",ShutterSpeedValue:"ShutterSpeedValue",ImageType:"ImageType",SubSecTime:"SubSecTime",SubSecTimeDigitized:"SubSecTimeDigitized",SubSecTimeOriginal:"SubSecTimeOriginal"};
 
@@ -64,17 +65,21 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     'id': identify
   };
   swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, width, height, '9.0.45', null, flashvars, params, attributes);
-  // FIXME Mouse Wheel
-  function thisMovie(movieName) {
+  
+  /************************************ Mousewheel Event *******************************************/
+  var setInt = self.setInterval(readyWheel, 50);
+  function readyWheel() {
+    if (document.getElementById(identify).tagName == 'OBJECT') {
+	  wheelSetup(); 
+	  window.clearInterval(setInt);
+	}    
+  };
+ function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
       return window[movieName];
     } else {
       return document[movieName];
     }
-  }
-  window.onload = function() {
-    wheelSetup();
-    setTimeout(function(){wheelSetup()}, 1000);
   }
   function wheelSetup() {
     var eventSupported = function(eventName, el) {
@@ -103,25 +108,24 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     event = event || window.event;
     var delta = 0;
     if (event.wheelDelta) {
-      delta = event.wheelDelta/120;
+      delta = event.wheelDelta / 120;
       // opera 9x系列的滚动方向与IE保持一致，10后修正
       if(window.opera && window.opera.version() < 10)
         delta = -delta;
       }
       else if (event.detail) {
-        delta = -event.detail/3;
+        delta = -event.detail / 3;
       }
       // 由于事件对象的原有属性是只读，我们只能通过添加一个私有属性delta来解决兼容问题
-        event.delta = Math.round(delta); //修正safari的浮点 bug
-        callback.call(obj,event);
+        event.delta = Math.round(delta); // 修正safari的浮点 bug
+        callback.call(obj, event);
       });
     }
     wheel(document.getElementById(identify), function(e) {
-       try {
-         thisMovie(identify).MOUSE_WHEEL_detail(e.delta);
-        } catch(e) { return false; }
+       thisMovie(identify).MOUSE_WHEEL_detail(e.delta);
     });
   }
+  /****************************************** END **************************************************/
 }
 
 // 压缩包查看器
@@ -338,4 +342,4 @@ function render_exif_viewer(url, identify, serverURL, kwargs) {
   }
 }
 
-/****************************************** end **************************************************/
+/****************************************** END **************************************************/
