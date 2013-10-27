@@ -42,7 +42,7 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
 }
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
-  if (onlyRequest != true) {
+  if (onlyRequest != true && n == 0) {
     document.getElementById(identify).innerHTML = loadingFunc(serverURL);
   }
   var origin = window.location.protocol + '//' + window.location.host;
@@ -237,11 +237,11 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
     var url = getURL(type, serverURL, dirMD5, sourceURL);
   }
 
-  // FLASH 查看
+  // FLASH查看
   if(type == 'flash') {
     render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
-  // HTML 查看
+  // HTML查看
   else if (type == 'html') {
     render_html_viewer(url, identify, serverURL, kwargs);
   }
@@ -297,4 +297,4 @@ function prepare_for_view(sourceURL, serverURL) {
   }
 }
 
-/****************************************** end **************************************************/
+/****************************************** END **************************************************/
