@@ -73,8 +73,8 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 	  wheelSetup(); 
 	  window.clearInterval(setInt);
 	}    
-  };
- function thisMovie(movieName) {
+  }
+  function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
       return window[movieName];
     } else {
