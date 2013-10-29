@@ -26,9 +26,11 @@ kwargs是一个展示参数，包括：
 - allow_copy：是否允许复制
 - waterprint_text: 水印文字
 - waterprint_size: 水印字体大小
+- waterprint_alpha: 水印透明度
 - waterprint_color：水印颜色
 - waterprint_x: x方向位置
 - waterprint_y: y方向位置
+- waterprint_rotation: 方向旋转
 
 也可以单独调用查看器：
 
