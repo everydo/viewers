@@ -49,6 +49,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
   if (kwargs.waterprint_text != undefined) {
     flashvars['waterprint_text'] = kwargs.waterprint_text;
     flashvars['waterprint_size'] = kwargs.waterprint_size;
+    flashvars['waterprint_alpha'] = kwargs.waterprint_alpha;
     flashvars['waterprint_color'] = kwargs.waterprint_color;
     flashvars['waterprint_x'] = kwargs.waterprint_x;
     flashvars['waterprint_y'] = kwargs.waterprint_y;
@@ -65,14 +66,14 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     'id': identify
   };
   swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, width, height, '9.0.45', null, flashvars, params, attributes);
-  
+
   /************************************ Mousewheel Event *******************************************/
   var setInt = self.setInterval(readyWheel, 50);
   function readyWheel() {
     if (document.getElementById(identify).tagName == 'OBJECT') {
-      wheelSetup(); 
+      wheelSetup();
       window.clearInterval(setInt);
-    }   
+    }
   }
   function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
