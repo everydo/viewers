@@ -30,7 +30,7 @@ kwargs是一个展示参数，包括：
 - waterprint_color：水印颜色
 - waterprint_x: x方向位置
 - waterprint_y: y方向位置
-- waterprint_rotation: 方向旋转
+- waterprint_rotation: 方向旋转. 从 0 到 180 的值表示顺时针方向旋转；从 0 到 -180 的值表示逆时针方向旋转
 
 也可以单独调用查看器：
 
