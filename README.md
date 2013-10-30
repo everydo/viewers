@@ -40,11 +40,11 @@ kwargs是一个展示参数，包括：
 
 - 图片查看器
 
-            render_image_viwer(url, identidy, serverURL, kwargs)
+            render_image_viewer(url, identidy, serverURL, kwargs)
 
 - html查看器
 
-            render_html_viwer(url, identidy, serverURL, kwargs)
+            render_html_viewer(url, identidy, serverURL, kwargs)
 
 - 压缩包查看器
 
