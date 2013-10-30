@@ -30,37 +30,37 @@ kwargs是一个展示参数，包括：
 - waterprint_color：水印颜色
 - waterprint_x: x方向位置
 - waterprint_y: y方向位置
-- waterprint_rotation: 方向旋转. 从 0 到 180 的值表示顺时针方向旋转；从 0 到 -180 的值表示逆时针方向旋转
+- waterprint_rotation: 方向旋转(从 0 到 180 的值表示顺时针方向旋转；从 0 到 -180 的值表示逆时针方向旋转)
 
 也可以单独调用查看器：
 
 - 纯文本查看器
 
-            render_text_viewer(sourceURL, identidy, serverURL, kwargs)
+            render_text_viewer(url, identidy, serverURL, kwargs)
 
 - 图片查看器
 
-            render_image_viwer(sourceURL, identidy, serverURL, kwargs)
+            render_image_viwer(url, identidy, serverURL, kwargs)
 
 - html查看器
 
-            render_html_viwer(sourceURL, identidy, serverURL, kwargs)
+            render_html_viwer(url, identidy, serverURL, kwargs)
 
 - 压缩包查看器
 
-            render_zip_viewer(sourceURL, identidy, serverURL, kwargs)
+            render_zip_viewer(url, identidy, serverURL, kwargs)
 
 - 音频查看器
 
-            render_audio_viewer(sourceURL, identidy, serverURL, kwargs)
+            render_audio_viewer(url, identidy, serverURL, kwargs)
 
 - 视频查看器
 
-            render_video_viewer(sourceURL, identidy, serverURL, kwargs)
+            render_video_viewer(url, identidy, serverURL, kwargs)
 
 - 易度的pdf转换swfx查看器
 
-            render_flash_viewer(sourceURL, identidy, serverURL, kwargs)
+            render_flash_viewer(url, identidy, serverURL, kwargs)
 
 上传文件后，打开查看器，如果文档没有转换过，则会发起转换。
 如果希望通过程序主动发起转换（而不是查看器），可以直接调用这个API：
