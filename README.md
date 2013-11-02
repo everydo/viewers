@@ -31,6 +31,9 @@ kwargs是一个展示参数，包括：
 - waterprint_x: x方向位置
 - waterprint_y: y方向位置
 - waterprint_rotation: 方向旋转(从 0 到 180 的值表示顺时针方向旋转；从 0 到 -180 的值表示逆时针方向旋转)
+- loading_info: 文档正在加载的提示
+- converting_info: 文件正在转换的提示
+- timeout_info: 文档转换超时的提示
 
 也可以单独调用查看器：
 
