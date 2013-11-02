@@ -7,16 +7,16 @@ var retryCount = 200;
 var intervalSecond = 3;
 
 // 文档转换提示
-var timeoutError = '转换超时，请刷新后重试...';
-var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/loading.gif">';}
-var conversionFunc = function(serverURL, n){return '转换中请稍候' + (n + 1) + '/' + retryCount + ' <img src="' + serverURL + '/static/loading.gif">';}
+var timeoutFunc = function(serverURL){return '转换超时，请刷新后重试...';}
+var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
+var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
 
 /****************************************** Ajax *************************************************/
 
 function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (n > retryCount - 1) {
     if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = timeoutError;
+      document.getElementById(identify).innerHTML = kwargs.timeoutFunc ? kwargs.timeoutFunc(serverURL) : timeoutFunc(serverURL);
       return;
     } else {
       return;
@@ -43,13 +43,13 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (onlyRequest != true && n == 0) {
-    document.getElementById(identify).innerHTML = loadingFunc(serverURL);
+    document.getElementById(identify).innerHTML = kwargs.loadingFunc ? kwargs.loadingFunc(serverURL) : loadingFunc(serverURL);
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
   if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1) {
     if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
+      document.getElementById(identify).innerHTML = kwargs.convertingFunc ? kwargs.convertingFunc(serverURL) : convertingFunc(serverURL);
     }
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
@@ -75,7 +75,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
         window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
         if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
+          document.getElementById(identify).innerHTML = kwargs.convertingFunc ? kwargs.convertingFunc(serverURL) : convertingFunc(serverURL);
         }
       };
       var hasShow = false;
@@ -108,7 +108,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
       window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
       if (onlyRequest != true) {
-        document.getElementById(identify).innerHTML = conversionFunc(serverURL, n);
+        document.getElementById(identify).innerHTML = kwargs.convertingFunc ? kwargs.convertingFunc(serverURL) : convertingFunc(serverURL);
       }
     }
     else {
