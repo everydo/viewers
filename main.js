@@ -43,7 +43,7 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (onlyRequest != true && n == 0) {
-    document.getElementById(identify).innerHTML = kwargs.loading_info | loadingFunc(serverURL);
+    document.getElementById(identify).innerHTML = kwargs.loading_info || loadingFunc(serverURL);
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
