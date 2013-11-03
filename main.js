@@ -11,6 +11,8 @@ var timeoutInfo = '转换超时，请刷新后重试...';
 var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
 var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
 
+var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
+
 /****************************************** Ajax *************************************************/
 
 function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
@@ -186,7 +188,6 @@ function getExt(url) {
 function getType(ext) {
   var type = previewCategory[ext];
   if (type == 'flash') {
-    var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
     if (swfobject.getFlashPlayerVersion()['major'] < 9 || mobileAccess) {
       type = 'html';
     }
@@ -219,6 +220,7 @@ function getURL(type, serverURL, dirMD5, sourceURL) {
 
 /****************************************** API **************************************************/
 
+// edo_viewer API
 function edo_viewer(serverURL, sourceURL, identify, kwargs) {
   var ext = getExt(sourceURL);
   var type = getType(ext);
@@ -236,28 +238,22 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
     kwargs['ext'] = ext;
     var url = getURL(type, serverURL, dirMD5, sourceURL);
   }
-
-  // FLASH查看
+ 
   if(type == 'flash') {
     render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
-  // HTML查看
   else if (type == 'html') {
     render_html_viewer(url, identify, serverURL, kwargs);
   }
-  // 压缩包查看
   else if (type == 'RAR') {
     render_zip_viewer(url, identify, serverURL, kwargs);
   }
-  // 音频查看
   else if (type == 'audio') {
     render_audio_viewer(url, identify, serverURL, kwargs);
   }
-  // 视频查看
   else if (type == 'video') {
     render_video_viewer(url, identify, serverURL, kwargs);
   }
-  // 图片查看
   else if (type == 'image') {
     var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
     kwargs['exifURL'] = exifURL;
@@ -265,6 +261,7 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
   }
 }
 
+// prepare_for_view API
 function prepare_for_view(sourceURL, serverURL) {
   var ext = getExt(sourceURL);
   var type = getType(ext);
