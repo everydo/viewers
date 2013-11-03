@@ -4,22 +4,31 @@ var supportExt = {doc:!0,docx:!0,xls:!0,xlsx:!0,ppt:!0,pps:!0,pos:!0,pptx:!0,rtf
 // EXIF 翻译
 var exifTranslate = {XResolution:"影像水平分辨率",YResolution:"影像垂直分辨率",ResolutionUnit:"分辨率单位",Orientation:"方向",ExifOffset:"Exif信息位置",ColorSpace:"影像色域空间",DateTime:"文件修改时间",ExposureTime:"曝光时间",FNumber:"光圈值",ISOSpeedRatings:"ISO速度",CompressedBitsPerPixel:"影像压缩模式",ExposureBiasValue:"曝光补偿",ExposureBiasValue:"最大光圈",MeteringMode:"测光模式",LightSource:"光源",Flash:"闪光灯",FocalLength:"焦距",FlashpixVersion:"支持位图的版本",PixelXDimension:"有效图像宽度",PixelYDimension:"有效图像高度",FileSource:"源文件",SceneType:"场景类型",CustomRendered:"自定义图像处理",ExposureMode:"曝光模式",WhiteBalance:"白平衡",DigitalZoomRatio:"数位变焦倍数",FocalLengthln38mmFilm:"35毫米焦距",SceneCaptureType:"取景模式",GainControl:"增益控制",Contrast:"对比度",Saturation:"饱和度",Sharpness:"锐度",SubjectDistanceRange:"主体距离范围",ExifImageWidth:"图像宽度",ExifImageLength:"图像高度",Compression:"压缩",Make:"制造厂商",Model:"相机型号",ApertureValue:"光圈数",ComponentsConfiguration:"图像构造",DateTimeDigitized:"数字化时间",DateTimeOriginal:"创建时间",ExposureProgram:"曝光程序",FlashPixVersion:"FlashPix版本",YCbCrPositioning:"色相定位",ExifVersion:"Exif版本",FirmwareVersion:"Firmware版本",Software:"软件名称",OwnerName:"OwnerName",ShutterSpeedValue:"ShutterSpeedValue",FocalPlaneResolutionUnit:"FocalPlaneResolutionUnit",FocalPlaneXResolution:"FocalPlaneXResolution",FocalPlaneYResolution:"FocalPlaneYResolution",InteroperabilityOffset:"InteroperabilityOffset",ShutterSpeedValue:"ShutterSpeedValue",ImageType:"ImageType",SubSecTime:"SubSecTime",SubSecTimeDigitized:"SubSecTimeDigitized",SubSecTimeOriginal:"SubSecTimeOriginal"};
 
+var noInstallInfo = '浏览器没有安装Flash插件，请安装后再刷新页面查看。'
+
+function getPxValue(value) {
+  if (/%$/.test(value)) {
+    width = value.replace(/%$/, '') * 10 + 'px';
+  } else if (/[^px/em]$/i.test(value)) {
+    value += 'px';    
+  }
+  return value;
+}
 
 /***************************************** 查看器 ************************************************/
 
-// HTML查看器
+// HTML 查看器
 function render_html_viewer(url, identify, serverURL, kwargs) {
   var callback = kwargs.callback;
   if (!callback) {
     ajaxRequest(0, url, 'html', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  var width = kwargs.width;
-  var height = kwargs.height;
+  var width = kwargs.width || 700;
+  var height = kwargs.height || 537;
 
-  var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
   if (mobileAccess) {
-    var html = '<div style="overflow:scroll; -webkit-overflow-scrolling:touch; width:' + width + 'px; height:' + height + 'px">';
+    var html = '<div style="overflow:scroll; -webkit-overflow-scrolling:touch; width:' + getPxValue(width) + '; height:' + getPxValue(height) + '">';
   } else {
     var html = '';
   }
@@ -30,14 +39,14 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
   document.getElementById(identify).innerHTML = html;
 }
 
-// FLASH查看器
+// Flash 查看器
 function render_flash_viewer(url, identify, serverURL, kwargs) {
   var width = kwargs.width;
   var height = kwargs.height;
   var allow_print = kwargs.allow_print == 'false' || kwargs.allow_print == false ? false : true;
   var allow_copy = kwargs.allow_copy == 'false' || kwargs.allow_copy == false ? false : true;
 
-  document.getElementById(identify).innerHTML = '请下载最新版本的flash播放器安装后再刷新页面查看';
+  document.getElementById(identify).innerHTML = noInstallInfo;
 
   var flashvars = {};
     flashvars['swf_file'] = url;
@@ -49,7 +58,6 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
   if (kwargs.waterprint_text != undefined) {
     flashvars['waterprint_text'] = kwargs.waterprint_text;
     flashvars['waterprint_size'] = kwargs.waterprint_size;
-    flashvars['waterprint_alpha'] = kwargs.waterprint_alpha;
     flashvars['waterprint_color'] = kwargs.waterprint_color;
     flashvars['waterprint_x'] = kwargs.waterprint_x;
     flashvars['waterprint_y'] = kwargs.waterprint_y;
@@ -67,14 +75,14 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     'id': identify
   };
   swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, width, height, '9.0.45', null, flashvars, params, attributes);
-
+  
   /************************************ Mousewheel Event *******************************************/
   var setInt = self.setInterval(readyWheel, 50);
   function readyWheel() {
     if (document.getElementById(identify).tagName == 'OBJECT') {
-      wheelSetup();
+      wheelSetup(); 
       window.clearInterval(setInt);
-    }
+    }   
   }
   function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
@@ -205,9 +213,19 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
     ajaxRequest(0, url, 'audio', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  var width = kwargs.width;
-  var height = kwargs.height;
+  var width = kwargs.width || '250px';
   var ext = kwargs.ext;
+ 
+  // 采用 HTML5 音频  
+  if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {
+    var html = '<audio controls="controls">';
+       html += '<source src="' + url + '" type="audio/ogg">';
+       html += '<source src="' + url + '" type="audio/mpeg">';
+       html += noInstallInfo;
+       html += '</audio>';
+    document.getElementById(identify).innerHTML = html;
+    return;
+  }
 
   if(ext != '.mid' || ext != '.wma') {
     var player = serverURL + '/edoviewer/singlemp3player.swf';
@@ -239,9 +257,20 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
     ajaxRequest(0, url, 'video', identify, serverURL, kwargs, 'HEAD');
     return;
   }
-  var width = kwargs.width;
-  var height = kwargs.height;
+  var width = kwargs.width || '520px';
+  var height = kwargs.height || '330px'; 
   var ext = kwargs.ext;
+
+  // 采用 HTML5 视频  
+  if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {
+    var html = '<video width="'  + width + '" height="' + height + 'px" controls="controls">';
+       html += '<source src="' + url + '" type="video/mp4" />';
+       html += '<source src="' + url + '" type="video/ogg" />';
+       html += noInstallInfo;
+       html += '</video>';
+    document.getElementById(identify).innerHTML = html;
+    return;
+  }
 
   if (ext == '.swf') {
     var html = '<div class="flash-movie hVlog">'
@@ -261,7 +290,7 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
        html += '</div>';
     document.getElementById(identify).innerHTML = html;
   } else {
-    var html = '<a style="display:block; width:' + width +'px; height:' + height + 'px;" ';
+    var html = '<a style="display:block; width:' + getPxValue(width) + '; height:' + getPxValue(height) + ';" ';
        html += 'href="' + url + '" id="' + identify + 'player"></a>';
     document.getElementById(identify).innerHTML = html;
     flowplayer(identify + 'player', {src: serverURL + '/edoviewer/flowplayer-3.1.5.swf', wmode: 'opaque'}, {
