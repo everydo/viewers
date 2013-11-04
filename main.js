@@ -16,7 +16,7 @@ String.prototype.encode4Js = function() {
   var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D'];
   var s = this;
   for(var i = 0; i < o.length; i++) {
-    s = s.replace(o[i],n[i]);
+    s = s.replace(o[i], n[i]);
   }
   return s;
 };
