@@ -124,7 +124,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         xdr.send(null);
       } catch(ex) {}
     } else {
-        url = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
+        var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
         var iframe = document.createElement('iframe');
         iframe.frameBorder = 0;
         iframe.src = src;
