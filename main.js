@@ -12,7 +12,7 @@ var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + s
 var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
 
 String.prototype.encode4Js = function() {
-  var o = [/\\/g,/"/g,/'/g,/\//g,/\r/g,/\n/g];
+  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g];
   var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D'];
   var s = this;
   for(var i = 0; i < o.length; i++) {
