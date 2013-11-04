@@ -11,6 +11,37 @@ var timeoutInfo = '转换超时，请刷新后重试...';
 var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
 var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
 
+String.prototype.encode4Js = function() {
+  var o = [/\\/g,/"/g,/'/g,/\//g,/\r/g,/\n/g];
+  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D'];
+  var s = this;
+  for(var i = 0; i < o.length; i++) {
+    s = s.replace(o[i],n[i]);
+  }
+  return s;
+};
+Object.serialize2Str = function(obj) {
+  if(obj == null) return null;
+  if(obj.serialize2Str) return obj.serialize2Str();
+  var cst = obj.constructor;
+  switch(cst) {
+    case String: return '\'' + obj.encode4Js() + '\'';
+    case Number: return obj + '';
+    case Date: return 'new Date(' + obj.getTime() + ')';
+    case Array:
+      var ar = [];
+      for(var i = 0; i < obj.length; i++) ar[i] = Object.serialize2Str(obj[i]);
+      return '[' + ar.join(',') + ']';
+    case Object:
+      var ar = [];
+      for(var i in obj) {
+        ar.push('\'' + (i+'').encode4Js()+'\':' + Object.serialize2Str(obj[i]));
+      }
+      return '{' + ar.join(',') + '}';
+  }
+  return null;
+};
+
 var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
 
 /****************************************** Ajax *************************************************/
@@ -90,10 +121,22 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       }
       xdr.onprogress = progres;
       try {
-          xdr.send(null);
+        xdr.send(null);
       } catch(ex) {}
     } else {
-      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
+        url = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
+        var iframe = document.createElement('iframe');
+        iframe.frameBorder = 0;
+        iframe.src = src;
+        if (onlyRequest) {
+          iframe.style.display = 'none';	   	
+          document.body.appendChild(iframe);
+        } else {
+          iframe.width = kwargs.width || 700;
+          iframe.height = kwargs.height || 537;
+          document.getElementById(identify).innerHTML = '';
+          document.getElementById(identify).appendChild(iframe);
+	    }
     }
   } else {
     xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
