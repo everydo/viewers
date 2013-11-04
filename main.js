@@ -124,6 +124,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         xdr.send(null);
       } catch(ex) {}
     } else {
+        // IE5.x and IE6 and IE7 browser iframe embedded
         var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
         var iframe = document.createElement('iframe');
         iframe.frameBorder = 0;
@@ -136,7 +137,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
           iframe.height = kwargs.height || 537;
           document.getElementById(identify).innerHTML = '';
           document.getElementById(identify).appendChild(iframe);
-	    }
+        }
     }
   } else {
     xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
