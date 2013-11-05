@@ -8,24 +8,15 @@ var intervalSecond = 3;
 
 // 文档转换提示
 var timeoutInfo = '转换超时，请刷新后重试...';
-var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
-var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/static/waiting.gif">';}
+var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';}
+var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';}
 
-String.prototype.encode4Js = function() {
-  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g];
-  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D'];
-  var s = this;
-  for(var i = 0; i < o.length; i++) {
-    s = s.replace(o[i], n[i]);
-  }
-  return s;
-};
 Object.serialize2Str = function(obj) {
   if(obj == null) return null;
   if(obj.serialize2Str) return obj.serialize2Str();
   var cst = obj.constructor;
   switch(cst) {
-    case String: return '\'' + obj.encode4Js() + '\'';
+    case String: return '"' + obj + '"';
     case Number: return obj + '';
     case Date: return 'new Date(' + obj.getTime() + ')';
     case Array:
@@ -35,7 +26,7 @@ Object.serialize2Str = function(obj) {
     case Object:
       var ar = [];
       for(var i in obj) {
-        ar.push('\'' + (i+'').encode4Js()+'\':' + Object.serialize2Str(obj[i]));
+        ar.push('"' + (i+'') + '":' + Object.serialize2Str(obj[i]));
       }
       return '{' + ar.join(',') + '}';
   }
@@ -130,11 +121,11 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         iframe.frameBorder = 0;
         iframe.src = src;
         if (onlyRequest) {
-          iframe.style.display = 'none';	   	
+          iframe.style.display = 'none';
           document.body.appendChild(iframe);
         } else {
-          iframe.width = kwargs.width || 700;
-          iframe.height = kwargs.height || 537;
+          iframe.width = getParentVlaue(kwargs.width);
+          iframe.height = getParentVlaue(kwargs.height);
           document.getElementById(identify).innerHTML = '';
           document.getElementById(identify).appendChild(iframe);
         }
@@ -259,6 +250,22 @@ function getURL(type, serverURL, dirMD5, sourceURL) {
   }
 }
 
+// 得到父高宽值
+function getParentVlaue(value) {
+  if (value == undefined) {
+    value = 700;
+  } else if (/px$/i.test(value)) {
+    value = value.replace(/px/i, '') + 50 + 'px';
+  } else if (/em$/i.test(value)) {
+    value = value.replace(/em/i, '') + 5 + 'em';
+  } else if (/\d$/.test(value)) {
+    value = value + 50;
+  } else if (/%$/.test(value)) {
+    value = '100%';
+  }
+  return value;
+}
+
 /****************************************** END **************************************************/
 
 
@@ -282,7 +289,7 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
     kwargs['ext'] = ext;
     var url = getURL(type, serverURL, dirMD5, sourceURL);
   }
- 
+
   if(type == 'flash') {
     render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
   }
@@ -334,7 +341,7 @@ function prepare_for_view(sourceURL, serverURL) {
   }
 
   for (var x = 0; x < items.length; x ++) {
-    ajaxRequest(start, items[x], null, null, serverURL, null, 'HEAD', true);
+    ajaxRequest(start, items[x], null, null, serverURL, {ext: ext}, 'HEAD', true);
   }
 }
 

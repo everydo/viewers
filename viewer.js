@@ -10,7 +10,7 @@ function getPxValue(value) {
   if (/%$/.test(value)) {
     width = value.replace(/%$/, '') * 10 + 'px';
   } else if (/[^px/em]$/i.test(value)) {
-    value += 'px';    
+    value += 'px';
   }
   return value;
 }
@@ -75,14 +75,14 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     'id': identify
   };
   swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, width, height, '9.0.45', null, flashvars, params, attributes);
-  
+
   /************************************ Mousewheel Event *******************************************/
   var setInt = self.setInterval(readyWheel, 50);
   function readyWheel() {
     if (document.getElementById(identify).tagName == 'OBJECT') {
-      wheelSetup(); 
+      wheelSetup();
       window.clearInterval(setInt);
-    }   
+    }
   }
   function thisMovie(movieName) {
     if (navigator.appName.indexOf("Microsoft") != -1) {
@@ -185,12 +185,12 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
         }
       }
       var size = '';
-      var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/static/download.gif">下载</a>';
+      var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
       if (current[child]['size']) {
         size = getDisplaySize(current[child]['size']);
       }
       if (current[child]['type'] == 'folder') {
-        html += '<li style="list-style-type:none;"><img src="' + serverURL + '/static/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
+        html += '<li style="list-style-type:none;"><img src="' + serverURL + '/edoviewer/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
         var priview_url = serverURL + '/@@view?' + href_url[1] + '&path=' + url_1 + 'decompress' + encodeURL(path);
         var splitname = current[child]['name'].split('.');
@@ -215,8 +215,8 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
   }
   var width = kwargs.width || '250px';
   var ext = kwargs.ext;
- 
-  // 采用 HTML5 音频  
+
+  // 采用 HTML5 音频
   if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {
     var html = '<audio controls="controls">';
        html += '<source src="' + url + '" type="audio/ogg">';
@@ -258,10 +258,10 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
     return;
   }
   var width = kwargs.width || '520px';
-  var height = kwargs.height || '330px'; 
+  var height = kwargs.height || '330px';
   var ext = kwargs.ext;
 
-  // 采用 HTML5 视频  
+  // 采用 HTML5 视频
   if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {
     var html = '<video width="'  + width + '" height="' + height + 'px" controls="controls">';
        html += '<source src="' + url + '" type="video/mp4" />';
@@ -293,7 +293,7 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
     var html = '<a style="display:block; width:' + getPxValue(width) + '; height:' + getPxValue(height) + ';" ';
        html += 'href="' + url + '" id="' + identify + 'player"></a>';
     document.getElementById(identify).innerHTML = html;
-    flowplayer(identify + 'player', {src: serverURL + '/edoviewer/flowplayer-3.1.5.swf', wmode: 'opaque'}, {
+    flowplayer(identify + 'player', {src: serverURL + '/edoviewer/flowplayer.swf', wmode: 'opaque'}, {
       clip: {
         autoPlay: false,
         scaling: 'fit',
@@ -301,7 +301,7 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
       },
       plugins: {
         controls: {
-          url: serverURL + '/edoviewer/flowplayer.controls-3.1.5.swf',
+          url: serverURL + '/edoviewer/flowplayer.controls.swf',
           timeColor: '#980118',
           all: true,
           play: true,
@@ -330,7 +330,7 @@ function render_image_viewer(url, identify, serverURL, kwargs) {
   if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
     var fun = "showEXIF('" + exifURL + "', 'image', '" + identify + "', '" + serverURL + "')";
     var html = '<br /><a href="javascript:;"; onclick="' + fun + '" />查看EXIF信息</a>';
-       html += '<img src="' + serverURL + '/static/waiting.gif" id="' + identify + '-exif-waiting" style="display:none;">';
+       html += '<img src="' + serverURL + '/edoviewer/waiting.gif" id="' + identify + '-exif-waiting" style="display:none;">';
        html += '<div id="' + identify + '-exif-html"></div>';
     document.getElementById(identify).innerHTML += html;
   }
