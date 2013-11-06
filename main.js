@@ -10,15 +10,28 @@ var intervalSecond = 3;
 function tipsFunc(serverURL, type, info) {
   if (info == undefined) {
     if (type == 'loading') {
-      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';   
+      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">'   
     } else if (type == 'converting') {
       return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';
     } else {
       return '转换超时，请刷新后重试...';
     }
   } else {
+    var re = /^function\s?(.*)/;
     if (info instanceof Function) {
-      return info();	
+      return info();
+    } 
+    else if (re.test(info)) {
+      var func = info.match(re)[1];
+      if (func) {
+        if (/^\(/.test(func)) {
+          eval('info=' + info + ';info();');
+        } else {
+          eval(func.replace(/\(.*/, '();'));
+        } 
+      } else {
+        return info;
+      }
     } else {
       return info;
     }
@@ -26,8 +39,8 @@ function tipsFunc(serverURL, type, info) {
 }
 
 String.prototype.encodeJs = function() {
-  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g];
-  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032'];
+  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g, /\+/g];
+  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032', '\\u002B'];
   var s = this;
   for(var i = 0; i < o.length; i++) {
     s = s.replace(o[i] ,n[i]);
@@ -299,7 +312,7 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
   var type = getType(ext);
   var dirMD5 = hex_md5(sourceURL) + ext;
 
-  if (!kwargs instanceof Object) { var kwargs = {}; }
+  if (!(kwargs instanceof Object)) { var kwargs = {}; }
 
   var serverURL = removeLastSlash(serverURL);
   var sourceURL = encodeURL(removeLastSlash(sourceURL));
