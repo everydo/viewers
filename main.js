@@ -11,17 +11,17 @@ function tipsFunc(serverURL, type, info) {
   if (info == undefined) {
     if (type == 'loading') {
       return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">'   
-	  } else if (type == 'converting') {
+    } else if (type == 'converting') {
       return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';
-	  } else {
+    } else {
       return '转换超时，请刷新后重试...';
     }
   } else {
-	  if (info instanceof Function) {
+    if (info instanceof Function) {
       return info();	
-	  } else {
+    } else {
       return info;
-	  }
+    }
   }
 }
 
