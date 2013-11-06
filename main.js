@@ -29,8 +29,9 @@ Object.serialize2Str = function(obj) {
         ar.push('"' + (i+'') + '":' + Object.serialize2Str(obj[i]));
       }
       return '{' + ar.join(',') + '}';
+    default:
+      return obj;
   }
-  return null;
 };
 
 var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
@@ -116,7 +117,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       } catch(ex) {}
     } else {
         // IE5.x and IE6 and IE7 browser iframe embedded
-        var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
+        var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs).replace(/#/, '%23') + '&url=' + url;
         var iframe = document.createElement('iframe');
         iframe.frameBorder = 0;
         iframe.src = src;
