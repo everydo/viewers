@@ -10,7 +10,7 @@ var intervalSecond = 3;
 function tipsFunc(serverURL, type, info) {
   if (info == undefined) {
     if (type == 'loading') {
-      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">'   
+      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';   
     } else if (type == 'converting') {
       return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';
     } else {
