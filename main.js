@@ -40,7 +40,6 @@ Object.serializeStr = function(obj) {
   var cst = obj.constructor;
   switch(cst) {
     case String: return '"' + obj.encodeJs() + '"';
-    case Number: return obj + '';
     case Date: return 'new Date(' + obj.getTime() + ')';
     case Array:
       var ar = [];
@@ -52,6 +51,7 @@ Object.serializeStr = function(obj) {
         ar.push('"' + (i+'').encodeJs() + '":' + Object.serializeStr(obj[i]));
       }
       return '{' + ar.join(',') + '}';
+    case Function: return '"' + obj.toString().encodeJs() + '"';
     default:
       return obj;
   }
