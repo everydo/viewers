@@ -7,9 +7,23 @@ var retryCount = 200;
 var intervalSecond = 3;
 
 // 文档转换提示
-var timeoutInfo = '转换超时，请刷新后重试...';
-var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';}
-var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';}
+function tipsFunc(serverURL, type, info) {
+  if (info == undefined) {
+    if (type == 'loading') {
+      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">'   
+	  } else if (type == 'converting') {
+      return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';
+	  } else {
+      return '转换超时，请刷新后重试...';
+    }
+  } else {
+	  if (info instanceof Function) {
+      return info();	
+	  } else {
+      return info;
+	  }
+  }
+}
 
 String.prototype.encodeJs = function() {
   var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g];
@@ -50,7 +64,7 @@ var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i
 function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (n > retryCount - 1) {
     if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = kwargs.timeout_info || timeoutInfo;
+      document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);
       return;
     } else {
       return;
@@ -77,19 +91,16 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (onlyRequest != true && n == 0) {
-    document.getElementById(identify).innerHTML = kwargs.loading_info || loadingFunc(serverURL);
+    document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'loading', kwargs.loading_info);
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
   if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1) {
-    if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = kwargs.converting_info || convertingFunc(serverURL);
-    }
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > retryCount - 1) {
         if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = kwargs.timeout_info || timeoutInfo;
+          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);;
           return;
         }
         else
@@ -107,10 +118,11 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
+		window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
         if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = kwargs.converting_info || convertingFunc(serverURL);
+		  document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
         }
+		
       };
       var hasShow = false;
       function progres() {
@@ -126,7 +138,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       } catch(ex) {}
     } else {
         // IE5.x and IE6 and IE7 browser iframe embedded
-        var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
+        var src = serverURL + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url;
         var iframe = document.createElement('iframe');
         iframe.frameBorder = 0;
         iframe.src = src;
@@ -155,7 +167,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
       window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
       if (onlyRequest != true) {
-        document.getElementById(identify).innerHTML = kwargs.converting_info || convertingFunc(serverURL);
+		document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
       }
     }
     else {
@@ -287,7 +299,7 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
   var type = getType(ext);
   var dirMD5 = hex_md5(sourceURL) + ext;
 
-  if (typeof(kwargs) != typeof({})) { var kwargs = {}; }
+  if (!kwargs instanceof Object) { var kwargs = {}; }
 
   var serverURL = removeLastSlash(serverURL);
   var sourceURL = encodeURL(removeLastSlash(sourceURL));
@@ -350,7 +362,7 @@ function prepare_for_view(sourceURL, serverURL) {
     items.push(exifURL);
   }
 
-  for (var x = 0; x < items.length; x ++) {
+  for (var x = 0; x < items.length; x++) {
     ajaxRequest(start, items[x], null, null, serverURL, {ext: ext}, 'HEAD', true);
   }
 }
