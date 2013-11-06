@@ -11,22 +11,31 @@ var timeoutInfo = '转换超时，请刷新后重试...';
 var loadingFunc = function(serverURL){return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';}
 var convertingFunc = function(serverURL){return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';}
 
-Object.serialize2Str = function(obj) {
+String.prototype.encodeJs = function() {
+  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g];
+  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032'];
+  var s = this;
+  for(var i = 0; i < o.length; i++) {
+    s = s.replace(o[i] ,n[i]);
+  }
+  return s;
+};
+Object.serializeStr = function(obj) {
   if(obj == null) return null;
-  if(obj.serialize2Str) return obj.serialize2Str();
+  if(obj.serializeStr) return obj.serializeStr();
   var cst = obj.constructor;
   switch(cst) {
-    case String: return '"' + obj + '"';
+    case String: return '"' + obj.encodeJs() + '"';
     case Number: return obj + '';
     case Date: return 'new Date(' + obj.getTime() + ')';
     case Array:
       var ar = [];
-      for(var i = 0; i < obj.length; i++) ar[i] = Object.serialize2Str(obj[i]);
+      for(var i = 0; i < obj.length; i++) ar[i] = Object.serializeStr(obj[i]);
       return '[' + ar.join(',') + ']';
     case Object:
       var ar = [];
       for(var i in obj) {
-        ar.push('"' + (i+'') + '":' + Object.serialize2Str(obj[i]));
+        ar.push('"' + (i+'').encodeJs() + '":' + Object.serializeStr(obj[i]));
       }
       return '{' + ar.join(',') + '}';
     default:
@@ -117,7 +126,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       } catch(ex) {}
     } else {
         // IE5.x and IE6 and IE7 browser iframe embedded
-        var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs).replace(/#/, '%23') + '&url=' + url;
+        var src = serverURL + '/edo_viewer?kwargs=' + Object.serialize2Str(kwargs) + '&url=' + url;
         var iframe = document.createElement('iframe');
         iframe.frameBorder = 0;
         iframe.src = src;
@@ -125,8 +134,8 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
           iframe.style.display = 'none';
           document.body.appendChild(iframe);
         } else {
-          iframe.width = getParentVlaue(kwargs.width);
-          iframe.height = getParentVlaue(kwargs.height);
+          iframe.width = getParentValue(kwargs.width);
+          iframe.height = getParentValue(kwargs.height);
           document.getElementById(identify).innerHTML = '';
           document.getElementById(identify).appendChild(iframe);
         }
@@ -252,7 +261,7 @@ function getURL(type, serverURL, dirMD5, sourceURL) {
 }
 
 // 得到父高宽值
-function getParentVlaue(value) {
+function getParentValue(value) {
   if (value == undefined) {
     value = 700;
   } else if (/px$/i.test(value)) {
