@@ -118,9 +118,9 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-		window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
+        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
         if(onlyRequest != true) {
-		  document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
         }
 		
       };
@@ -167,7 +167,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
       window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
       if (onlyRequest != true) {
-		document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
       }
     }
     else {
