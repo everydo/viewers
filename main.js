@@ -10,7 +10,7 @@ var intervalSecond = 3;
 function tipsFunc(serverURL, type, info) {
   if (info == undefined) {
     if (type == 'loading') {
-      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">'   
+      return '加载中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">'
     } else if (type == 'converting') {
       return '转换中请稍候 <img src="' + serverURL + '/edoviewer/waiting.gif">';
     } else {
@@ -20,15 +20,11 @@ function tipsFunc(serverURL, type, info) {
     var re = /^function\s?(.*)/;
     if (info instanceof Function) {
       return info();
-    } 
+    }
     else if (re.test(info)) {
       var func = info.match(re)[1];
       if (func) {
-        if (/^\(/.test(func)) {
-          eval('info=' + info + ';info();');
-        } else {
-          eval(func.replace(/\(.*/, '();'));
-        } 
+        return eval('info=' + info + ';info();');
       } else {
         return info;
       }
@@ -135,7 +131,6 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         if(onlyRequest != true) {
           document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
         }
-		
       };
       var hasShow = false;
       function progres() {
@@ -322,7 +317,8 @@ function edo_viewer(serverURL, sourceURL, identify, kwargs) {
     return;
   } else {
     kwargs['ext'] = ext;
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
+    // customdownload 是专门为了迅雷而设的，防止它自动下载
+    var url = getURL(type, serverURL, dirMD5, sourceURL) + '&customdownload=false';
   }
 
   if(type == 'flash') {
