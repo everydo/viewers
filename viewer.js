@@ -25,7 +25,7 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
     return;
   }
   var width = kwargs.width || 700;
-  var height = kwargs.height || 537;
+  var height = kwargs.height || 450;
 
   if (mobileAccess) {
     var html = '<div style="overflow:scroll; -webkit-overflow-scrolling:touch; width:' + getPxValue(width) + '; height:' + getPxValue(height) + '">';
@@ -41,8 +41,8 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
 
 // Flash 查看器
 function render_flash_viewer(url, identify, serverURL, kwargs) {
-  var width = kwargs.width;
-  var height = kwargs.height;
+  var width = kwargs.width || 700;
+  var height = kwargs.height || 537;
   var allow_print = kwargs.allow_print == 'false' || kwargs.allow_print == false ? false : true;
   var allow_copy = kwargs.allow_copy == 'false' || kwargs.allow_copy == false ? false : true;
 
