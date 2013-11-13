@@ -75,6 +75,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     flashvars['waterprint_color'] = kwargs.waterprint_color;
     flashvars['waterprint_x'] = kwargs.waterprint_x;
     flashvars['waterprint_y'] = kwargs.waterprint_y;
+    flashvars['waterprint_alpha'] = kwargs.waterprint_alpha;
     flashvars['waterprint_rotation'] = kwargs.waterprint_rotation;
   }
 
