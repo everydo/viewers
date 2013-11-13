@@ -15,6 +15,19 @@ function getPxValue(value) {
   return value;
 }
 
+function oninitFunc(oninit, identify) {
+  var re = /^function\s?(.*)/;
+  if (oninit instanceof Function) {
+    eval(oninit(identify));
+  }
+  else if (re.test(oninit)) {
+    var func = oninit.match(re)[1];
+    if (func) {
+      return eval('oninit=' + oninit + ';oninit("' + identify + '");');
+    }
+  }
+}
+
 /***************************************** 查看器 ************************************************/
 
 // HTML 查看器
@@ -37,6 +50,7 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
     html += '</div>';
   }
   document.getElementById(identify).innerHTML = html;
+  oninitFunc(kwargs.oninit, identify);
 }
 
 // Flash 查看器
@@ -75,6 +89,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     'id': identify
   };
   swfobject.embedSWF(serverURL + '/edoviewer/zviewer.swf', identify, width, height, '9.0.45', null, flashvars, params, attributes);
+  oninitFunc(kwargs.oninit, identify);
 
   /************************************ Mousewheel Event *******************************************/
   var setInt = self.setInterval(readyWheel, 50);
@@ -204,6 +219,7 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
     return html;
   }
   document.getElementById(identify).innerHTML = '<ul>' + renderHTML(data['children']) + '</ul>';
+  oninitFunc(kwargs.oninit, identify);
 }
 
 // 音频查看器
@@ -248,6 +264,7 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
        html += '</object>';
   }
   document.getElementById(identify).innerHTML = html;
+  oninitFunc(kwargs.oninit, identify);
 }
 
 // 视频查看器
@@ -313,6 +330,7 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
       }
     });
   }
+  oninitFunc(kwargs.oninit, identify);
 }
 
 // 图片查看器
@@ -334,6 +352,7 @@ function render_image_viewer(url, identify, serverURL, kwargs) {
        html += '<div id="' + identify + '-exif-html"></div>';
     document.getElementById(identify).innerHTML += html;
   }
+  oninitFunc(kwargs.oninit, identify);
 }
 function showEXIF(exifURL, type, identify, serverURL) {
   var exif_table = document.getElementById(identify + '-exif-html').getElementsByTagName('table');
