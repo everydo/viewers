@@ -101,7 +101,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
     }
   }
   function thisMovie(movieName) {
-    if (navigator.appName.indexOf("Microsoft") != -1) {
+    if (navigator.appName.indexOf('Microsoft') != -1) {
       return window[movieName];
     } else {
       return document[movieName];
