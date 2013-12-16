@@ -286,11 +286,13 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
       }
       paramsStr += key + '=' + paramsObject[key];
     }
-    if (location){
-        paramsStr += '&location=' + location;
-    }else{
-        paramsStr += '&location=' + '/files/' + dirMD5;
+
+    if (location) {
+      paramsStr += '&location=' + location;
+    } else {
+      paramsStr += '&location=' + '/files/' + dirMD5;
     }
+
     var url = serverURL + '/download?' + paramsStr;
     if (type == 'image') {
       url += '&subfile=image_large'
@@ -325,7 +327,7 @@ var EdoViewer = {
   createViewer: function (identify, kwargs) {
     var serverURL = kwargs.server_url
        ,sourceURL = kwargs.source_url
-       ,location = kwargs.location;
+        ,location = kwargs.location;
 
     if (!(serverURL || sourceURL)) {
       return false;
@@ -337,8 +339,6 @@ var EdoViewer = {
 
     if (type) {
       kwargs['ext'] = ext;
-      // customdownload 是专门为了迅雷而设的，防止它自动下载
-      //var url = getURL(type, serverURL, dirMD5, sourceURL, kwargs) + '&customdownload=false';
       var url = getURL(type, serverURL, dirMD5, sourceURL, kwargs);
     }
 
