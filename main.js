@@ -39,7 +39,7 @@ String.prototype.encodeJs = function() {
   var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032', '\\u002B'];
   var s = this;
   for(var i = 0; i < o.length; i++) {
-    s = s.replace(o[i] ,n[i]);
+    s = s.replace(o[i], n[i]);
   }
   return s;
 };
@@ -272,13 +272,13 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
       account: account,
       username: username,
       download_source: download_source,
-      signcode: signcode,
+      signcode: signcode
     }
 
     var paramsStr = '';
     for (var key in paramsObject) {
       if (!paramsObject[key]) {
-        continue
+        continue;
       }
 
       if (paramsStr != '') {
@@ -295,7 +295,7 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
 
     var url = serverURL + '/download?' + paramsStr;
     if (type == 'image') {
-      url += '&subfile=image_large'
+      url += '&subfile=image_large';
     }
     return url;
   }
