@@ -70,14 +70,10 @@ var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i
 
 /****************************************** Ajax *************************************************/
 
-function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
   if (n > retryCount - 1) {
-    if(onlyRequest != true) {
-      document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);
-      return;
-    } else {
-      return;
-    }
+    document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);
+    return;
   }
   var xhr = null;
   if (window.XMLHttpRequest) {
@@ -95,11 +91,11 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
   }
   xhr.open(method, url, true);
   xhr.send(null);
-  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method, onlyRequest)};
+  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method)};
 }
 
-function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
-  if (onlyRequest != true && n == 0) {
+function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
+  if (n == 0) {
     document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'loading', kwargs.loading_info);
   }
   var origin = window.location.protocol + '//' + window.location.host;
@@ -108,35 +104,29 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > retryCount - 1) {
-        if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);;
-          return;
-        }
-        else
-          return;
+        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);;
+        return;
       }
       var xdr = new XDomainRequest();
       xdr.open('GET', url);
       xdr.onload = function() {
         if (method == 'GET') {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs, onlyRequest);
+          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
         }
         else if (!hasShow) {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs, onlyRequest);
+          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
         }
       }
       xdr.onerror = function() {
         var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
-        if(onlyRequest != true) {
-          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
-        }
-      };
+        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, intervalSecond * 1000);
+        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+      }
       var hasShow = false;
       function progres() {
         if (hasShow) { return false; }
         if (method == 'HEAD') {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs, onlyRequest);
+          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
           hasShow = true;
         }
       }
@@ -145,38 +135,31 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
         xdr.send(null);
       } catch(ex) {}
     } else {
-        // IE5.x and IE6 and IE7 browser iframe embedded
-        var src = serverURL + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url;
-        var iframe = document.createElement('iframe');
-        iframe.frameBorder = 0;
-        iframe.src = src;
-        if (onlyRequest) {
-          iframe.style.display = 'none';
-          document.body.appendChild(iframe);
-        } else {
-          iframe.width = getParentValue(kwargs.width);
-          iframe.height = getParentValue(kwargs.height);
-          document.getElementById(identify).innerHTML = '';
-          document.getElementById(identify).appendChild(iframe);
-        }
+      // IE5.x and IE6 and IE7 browser iframe embedded
+      var src = serverURL + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url;
+      var iframe = document.createElement('iframe');
+      iframe.frameBorder = 0;
+      iframe.src = src;
+      iframe.width = getParentValue(kwargs.width);
+      iframe.height = getParentValue(kwargs.height);
+      document.getElementById(identify).innerHTML = '';
+      document.getElementById(identify).appendChild(iframe);
     }
   } else {
-    xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
+    xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method);
   }
 }
 
-function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
   if (xmlHttp.readyState == 4) {
     if (xmlHttp.status == 200) {
       var url = url.replace(/\&_=.*/, '');
-      responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs, onlyRequest);
+      responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs);
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
       var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
-      if (onlyRequest != true) {
-        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
-      }
+      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, intervalSecond * 1000);
+      document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
     }
     else {
       document.getElementById(identify).innerHTML = "Error: status code is " + xmlHttp.status;
@@ -184,11 +167,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
   }
 }
 
-function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs, onlyRequest) {
-  if (onlyRequest == true && !type) {
-    return;
-  }
-
+function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
   kwargs['callback'] = true;
   if (type == 'html') {
     render_html_viewer(url, identify, serverURL, kwargs);
@@ -261,21 +240,61 @@ function getType(ext) {
 }
 
 // 得到预览地址
-function getURL(type, serverURL, dirMD5, sourceURL) {
+function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
   var patterns = {
-    'flash': '.frs.application_x-shockwave-flash-x/transformed.swf',
-    'html': '.frs.text_html/transformed.html',
-    'RAR': '.frs.application_json/transformed.json',
-    'audio': '.frs.audio_x-mpeg/transformed.mp3',
-    'video': '.frs.video_x-flv/transformed.flv',
-    'image': '.frs.image_png/image_large',
-    'image-exif': '.frs.application_exif-x-json/transformed.json'
+    'flash': 'application_x-shockwave-flash-x',
+    'html': 'text_html',
+    'RAR': 'application_json',
+    'audio': 'audio_x-mpeg',
+    'video': 'video_x-flv',
+    'image': 'image_png',
+    'image-exif': 'application_exif-x-json'
   }
   var pattern = patterns[type];
   if (pattern == undefined) {
     return;
   } else {
-    var url = serverURL + '/cache/files/' + dirMD5 + '/' + pattern  + '?source=' + sourceURL;
+    var location = kwargs.location || ''
+      ,ip = kwargs.ip || ''
+      ,timestamp = kwargs.timestamp || ''
+      ,app_id = kwargs.app_id || ''
+      ,account = kwargs.account || ''
+      ,username = kwargs.username || ''
+      ,download_source = kwargs.download_source || ''
+      ,signcode = kwargs.signcode || ''
+
+    var paramsObject = {
+      mime: pattern,
+      source: sourceURL,
+      ip: ip,
+      timestamp: timestamp,
+      app_id: app_id,
+      account: account,
+      username: username,
+      download_source: download_source,
+      signcode: signcode,
+    }
+
+    var paramsStr = '';
+    for (var key in paramsObject) {
+      if (!paramsObject[key]) {
+        continue
+      }
+
+      if (paramsStr != '') {
+        paramsStr += '&';
+      }
+      paramsStr += key + '=' + paramsObject[key];
+    }
+    if (location){
+        paramsStr += '&location=' + location;
+    }else{
+        paramsStr += '&location=' + '/files/' + dirMD5;
+    }
+    var url = serverURL + '/download?' + paramsStr;
+    if (type == 'image') {
+      url += '&subfile=image_large'
+    }
     return url;
   }
 }
@@ -301,78 +320,64 @@ function getParentValue(value) {
 
 /****************************************** API **************************************************/
 
-// edo_viewer API
-function edo_viewer(serverURL, sourceURL, identify, kwargs) {
-  var ext = getExt(sourceURL);
-  var type = getType(ext);
-  var dirMD5 = hex_md5(sourceURL) + ext;
+var EdoViewer = {
 
-  if (!(kwargs instanceof Object)) { var kwargs = {}; }
+  createViewer: function (identify, kwargs) {
+    var serverURL = kwargs.server_url
+       ,sourceURL = kwargs.source_url
+       ,location = kwargs.location;
 
-  var serverURL = removeLastSlash(serverURL);
-  var sourceURL = encodeURL(removeLastSlash(sourceURL));
+    if (!(serverURL || sourceURL)) {
+      return false;
+    }
 
-  if (type == undefined) {
-    document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
-    return;
-  } else {
-    kwargs['ext'] = ext;
-    // customdownload 是专门为了迅雷而设的，防止它自动下载
-    var url = getURL(type, serverURL, dirMD5, sourceURL) + '&customdownload=false';
+    var ext = getExt(location || sourceURL)
+      ,type = getType(ext)
+    ,dirMD5 = hex_md5(sourceURL) + ext;
+
+    if (type) {
+      kwargs['ext'] = ext;
+      // customdownload 是专门为了迅雷而设的，防止它自动下载
+      //var url = getURL(type, serverURL, dirMD5, sourceURL, kwargs) + '&customdownload=false';
+      var url = getURL(type, serverURL, dirMD5, sourceURL, kwargs);
+    }
+
+    function renderViewer () {
+      if(type == 'flash') {
+        render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
+      }
+      else if (type == 'html') {
+        render_html_viewer(url, identify, serverURL, kwargs);
+      }
+      else if (type == 'RAR') {
+        render_zip_viewer(url, identify, serverURL, kwargs);
+      }
+      else if (type == 'audio') {
+        render_audio_viewer(url, identify, serverURL, kwargs);
+      }
+      else if (type == 'video') {
+        render_video_viewer(url, identify, serverURL, kwargs);
+      }
+      else if (type == 'image') {
+        var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL, kwargs);
+        kwargs['exifURL'] = exifURL;
+        render_image_viewer(url, identify, serverURL, kwargs);
+      } else {
+        document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
+      }
+      return false;
+    }
+
+    var viewer = {
+      load: function () {
+        return renderViewer();
+      }
+    }
+    return viewer;
   }
 
-  if(type == 'flash') {
-    render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
-  }
-  else if (type == 'html') {
-    render_html_viewer(url, identify, serverURL, kwargs);
-  }
-  else if (type == 'RAR') {
-    render_zip_viewer(url, identify, serverURL, kwargs);
-  }
-  else if (type == 'audio') {
-    render_audio_viewer(url, identify, serverURL, kwargs);
-  }
-  else if (type == 'video') {
-    render_video_viewer(url, identify, serverURL, kwargs);
-  }
-  else if (type == 'image') {
-    var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
-    kwargs['exifURL'] = exifURL;
-    render_image_viewer(url, identify, serverURL, kwargs);
-  }
-}
-
-// prepare_for_view API
-function prepare_for_view(sourceURL, serverURL) {
-  var ext = getExt(sourceURL);
-  var type = getType(ext);
-  var dirMD5 = hex_md5(sourceURL) + ext;
-
-  var serverURL = removeLastSlash(serverURL);
-  var sourceURL = encodeURL(removeLastSlash(sourceURL));
-
-  var start = retryCount - 1;
-  var items = new Array();
-
-  if (type == undefined) {
-    return;
-  } else {
-    var url = getURL(type, serverURL, dirMD5, sourceURL);
-    items.push(url);
-  }
-
-  if(type == 'flash') {
-    var htmlURL = getURL('html', serverURL, dirMD5, sourceURL);
-    items.push(htmlURL);
-  }
-  else if (ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
-    var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL);
-    items.push(exifURL);
-  }
-
-  for (var x = 0; x < items.length; x++) {
-    ajaxRequest(start, items[x], null, null, serverURL, {ext: ext}, 'HEAD', true);
+  ,load: function () {
+    return viewer.load();
   }
 }
 

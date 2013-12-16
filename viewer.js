@@ -188,12 +188,8 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
       var path = current[child]['path'];
 
       var href_url = url.split('?');
-      var spliturl = href_url[0].split('\/');
-      var domains = spliturl[0] + '//' + spliturl[2];
-      var url_0 = href_url[0].replace(domains, '');
-      var spliturl_0 = url_0.split('\/');
-      var url_1 = url_0.replace(spliturl_0[spliturl_0.length-1], '');
-      var download_url = domains + url_1 + 'decompress' + path;
+      var params = href_url[1].replace(href_url[1].match(/mime=.*?&/), '')
+      var download_url = serverURL + '/@@download?' + params + '$$$' + encodeURL(path);
 
       if (current[child]['type'] == 'folder') {
         if (current[child]['children'].length > 0) {
@@ -201,17 +197,23 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
         }
       }
       var size = '';
-      var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
+
+      if(kwargs.download_source == '1') {
+          var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
+      }else{
+          var download = '';
+      }
       if (current[child]['size']) {
         size = getDisplaySize(current[child]['size']);
       }
       if (current[child]['type'] == 'folder') {
         html += '<li style="list-style-type:none;"><img src="' + serverURL + '/edoviewer/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
-        var priview_url = serverURL + '/@@view?' + href_url[1] + '&path=' + url_1 + 'decompress' + encodeURL(path);
+        var preview_url = serverURL + '/@@view?' + href_url[1] + '$$$' + encodeURL(path);
+
         var splitname = current[child]['name'].split('.');
         if (supportExt[(splitname[splitname.length-1]).toLowerCase()]){
-          html += '<table style="margin:0; width:100%;"><tr><td width="53%"><a href="' + priview_url + '" target="_blank" title="预览">' + current[child]['name'] +'</a></td>'+ children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
+          html += '<table style="margin:0; width:100%;"><tr><td width="53%"><a href="' + preview_url + '" target="_blank" title="预览">' + current[child]['name'] +'</a></td>'+ children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
         } else {
           html += '<table style="margin:0; width:100%;"><tr><td width="53%">' + current[child]['name'] + '</td>' + children + '<td width="23%">' +size +'</td><td width="23%">'+ download + '</td></tr></table>';
         }
