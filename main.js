@@ -53,7 +53,7 @@ String.prototype.encodeJs = function() {
   var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g, /\+/g];
   var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032', '\\u002B'];
   var s = this;
-  for(var i = 0; i < o.length; i++) {
+  for (var i = 0; i < o.length; i++) {
     s = s.replace(o[i], n[i]);
   }
   return s;
@@ -67,11 +67,11 @@ Object.serializeStr = function(obj) {
     case Date: return 'new Date(' + obj.getTime() + ')';
     case Array:
       var ar = [];
-      for(var i = 0; i < obj.length; i++) ar[i] = Object.serializeStr(obj[i]);
+      for (var i = 0; i < obj.length; i++) ar[i] = Object.serializeStr(obj[i]);
       return '[' + ar.join(',') + ']';
     case Object:
       var ar = [];
-      for(var i in obj) {
+      for (var i in obj) {
         ar.push('"' + (i+'').encodeJs() + '":' + Object.serializeStr(obj[i]));
       }
       return '{' + ar.join(',') + '}';

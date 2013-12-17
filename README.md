@@ -16,7 +16,8 @@ viewers
 
 可以简单的如下调用
 
-    edo_viewer(serverURL, sourceURL, identify, kwargs)
+    var viewer = EdoViewer.createViewer(identify, kwargs);
+    viewer.load();
 
 kwargs是一个展示参数，包括：
 
@@ -64,8 +65,3 @@ kwargs是一个展示参数，包括：
 - 易度的pdf转换swfx查看器
 
             render_flash_viewer(url, identidy, serverURL, kwargs)
-
-上传文件后，打开查看器，如果文档没有转换过，则会发起转换。
-如果希望通过程序主动发起转换（而不是查看器），可以直接调用这个API：
-
-        prepare_for_view(sourceURL, serverURL)

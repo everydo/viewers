@@ -21,7 +21,7 @@ function replaceContentURL(identify, url) {
   var tagsName = ['a', 'img'];
   var re = new RegExp('^' + frameDocument.location.protocol + '//' + frameDocument.location.host);
 
-  for (var t = 0; t < tagsName.length;  t++) {
+  for (var t = 0; t < tagsName.length; t++) {
     var elements = frameDocument.getElementsByTagName(tagsName[t]);
     for (var x = 0; x < elements.length; x++) {
       if (tagsName[t] == 'a') {
@@ -177,7 +177,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
       });
     }
     wheel(document.getElementById(identify), function(e) {
-       thisMovie(identify).MOUSE_WHEEL_detail(e.delta);
+      thisMovie(identify).MOUSE_WHEEL_detail(e.delta);
     });
   }
   /****************************************** END **************************************************/
@@ -220,21 +220,22 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
     var lastParams = '';
     var locationParams = '';
     var mimeParams = '';
-    for(var index=0; index < params.length; index ++){
-      var param = params[index];
+    for (var x = 0; x < params.length; x++) {
+      var param = params[x];
       if (!param){
-          continue
-      }else if (param.indexOf('mime=') == 0){
+        continue;
+      }
+      else if (param.indexOf('mime=') == 0) {
         mimeParams = '&' + param;
       }
-      else if (param.indexOf('location=') == 0){
+      else if (param.indexOf('location=') == 0) {
         locationParams = param;
-      }else{
-          lastParams += '&' + param;
+      } else {
+        lastParams += '&' + param;
       }
     }
 
-    for(var child = 0; child < current.length; child ++) {
+    for (var child = 0; child < current.length; child++) {
       var children = '';
       var path = current[child]['path'];
 
@@ -245,16 +246,17 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
           children = getChildHTML(current[child]['children']);
         }
       }
-      var size = '';
-
       if(kwargs.download_source == '1') {
-          var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
-      }else{
-          var download = '';
+        var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
+      } else {
+        var download = '';
       }
+
+      var size = '';
       if (current[child]['size']) {
         size = getDisplaySize(current[child]['size']);
       }
+
       if (current[child]['type'] == 'folder') {
         html += '<li style="list-style-type:none;"><img src="' + serverURL + '/edoviewer/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
@@ -426,7 +428,7 @@ function render_exif_viewer(url, identify, serverURL, kwargs) {
   var data = kwargs.data;
 
   var html = '<table style="border-spacing:0; line-height:1.5; display:block;">'
-  for(num = 0; num < data.length; num ++) {
+  for (num = 0; num < data.length; num++) {
     var str = data[num]['title'];
       if (exifTranslate[data[num]['title']]) {
         str = exifTranslate[data[num]['title']];
