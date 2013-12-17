@@ -15,6 +15,34 @@ function getPxValue(value) {
   return value;
 }
 
+function replaceContentURL(identify, url) {
+  var url = url + '&subfile=';
+  var frameDocument = window.frames[identify + '-frame-content'].document;
+  var tagsName = ['a', 'img'];
+  var re = new RegExp('^' + frameDocument.location.protocol + '//' + frameDocument.location.host);
+
+  for (var t = 0; t < tagsName.length;  t++) {
+    var elements = frameDocument.getElementsByTagName(tagsName[t]);
+    for (var x = 0; x < elements.length; x++) {
+      if (tagsName[t] == 'a') {
+        var href = elements[x].href;
+        if (!(re.test(href))) {
+          continue;
+        }
+        var old = href.replace(/.*\//, '');
+        elements[x].href = url + old;
+      } else {
+        var src = elements[x].src;
+        if (!(re.test(src))) {
+          continue;
+        }
+        var old = src.replace(/.*\//, '');
+        elements[x].src = url + old;
+      }
+    }
+  }
+}
+
 function oninitFunc(oninit, identify) {
   var re = /^function\s?(.*)/;
   if (oninit instanceof Function) {
@@ -45,11 +73,12 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
   } else {
     var html = '';
   }
-  html += '<iframe width="' + width + '" height="' + height + '" style="border:1px solid #c3c3c3;" src="' + url + '"></iframe>';
+  html += '<iframe name="' + identify+ '-frame-content" width="' + width + '" height="' + height + '" style="border:1px solid #c3c3c3;" src="' + url + '" onload="replaceContentURL(\'' + identify + '\',\'' + url + '\')"></iframe>';
   if (mobileAccess) {
     html += '</div>';
   }
   document.getElementById(identify).innerHTML = html;
+
   oninitFunc(kwargs.oninit, identify);
 }
 
@@ -64,6 +93,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 
   var flashvars = {};
     flashvars['swf_file'] = url;
+    flashvars['subfile'] = true;
     flashvars['allow_print'] = allow_print;
     flashvars['allow_copy'] = allow_copy;
     flashvars['allow_debug'] = false;
@@ -82,7 +112,7 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
   var params = {
     menu: false,
     bgcolor: '#efefef',
-    allowFullScreen: 'true',
+    allowFullScreen: true,
     allowScriptAccess: 'always',
     wmode: 'opaque'
   };
@@ -181,15 +211,35 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
       return Math.round(size/1024.0*100)/100 + 'KB';
     }
   }
+
   function renderHTML(current) {
     var html = '';
+    var href_url = url.split('?');
+    var params = href_url[1].split('&');
+    // 因为需要拆解url，将location加上压缩包子文件的路径
+    // 如果是下载链接，还需要去除mime参数
+    var lastParams = '';
+    var locationParams = '';
+    var mimeParams = '';
+    for(var index=0; index < params.length; index ++){
+      var param = params[index];
+      if (!param){
+          continue
+      }else if (param.indexOf('mime=') == 0){
+        mimeParams = '&' + param;
+      }
+      else if (param.indexOf('location=') == 0){
+        locationParams = param;
+      }else{
+          lastParams += '&' + param;
+      }
+    }
+
     for(var child = 0; child < current.length; child ++) {
       var children = '';
       var path = current[child]['path'];
 
-      var href_url = url.split('?');
-      var params = href_url[1].replace(href_url[1].match(/mime=.*?&/), '')
-      var download_url = serverURL + '/@@download?' + params + '$$$' + encodeURL(path);
+      var download_url = serverURL + '/@@download?' + locationParams + '$$$' + encodeURL(path) + lastParams;
 
       if (current[child]['type'] == 'folder') {
         if (current[child]['children'].length > 0) {
@@ -209,7 +259,7 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
       if (current[child]['type'] == 'folder') {
         html += '<li style="list-style-type:none;"><img src="' + serverURL + '/edoviewer/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
-        var preview_url = serverURL + '/@@view?' + href_url[1] + '$$$' + encodeURL(path);
+        var preview_url = serverURL + '/@@view?' + locationParams + '$$$' + encodeURL(encodeURL(path)) + mimeParams + lastParams;
 
         var splitname = current[child]['name'].split('.');
         if (supportExt[(splitname[splitname.length-1]).toLowerCase()]){
@@ -234,6 +284,7 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
   }
   var width = kwargs.width || '250px';
   var ext = kwargs.ext;
+  var url = url.replace(/&/g, '%26');
 
   // 采用 HTML5 音频
   if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {

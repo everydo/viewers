@@ -34,6 +34,21 @@ function tipsFunc(serverURL, type, info) {
   }
 }
 
+function statusFunc(status) {
+  var statusText = {
+    400: '签名不正确',
+    401: '超时',
+    403: '路径无权限',
+    404: '无此文件',
+    405: '正在转换',
+    406: '转换失败',
+    407: '正在下载',
+    408: 'ip不匹配',
+    409: '账户不存在'
+  }
+  return statusText[status] || 'Error: status code is ' + status;
+}
+
 String.prototype.encodeJs = function() {
   var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g, /\+/g];
   var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032', '\\u002B'];
@@ -65,6 +80,18 @@ Object.serializeStr = function(obj) {
       return obj;
   }
 };
+
+function embedFrame(identify, serverURL, kwargs, url) {
+  kwargs['embedded'] = true;
+  var src = serverURL + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url.replace(/&/g, '%26');
+  var iframe = document.createElement('iframe');
+  iframe.frameBorder = 0;
+  iframe.src = src;
+  iframe.width = getParentValue(kwargs.width);
+  iframe.height = getParentValue(kwargs.height);
+  document.getElementById(identify).innerHTML = '';
+  document.getElementById(identify).appendChild(iframe);
+}
 
 var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
 
@@ -136,17 +163,15 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
       } catch(ex) {}
     } else {
       // IE5.x and IE6 and IE7 browser iframe embedded
-      var src = serverURL + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url;
-      var iframe = document.createElement('iframe');
-      iframe.frameBorder = 0;
-      iframe.src = src;
-      iframe.width = getParentValue(kwargs.width);
-      iframe.height = getParentValue(kwargs.height);
-      document.getElementById(identify).innerHTML = '';
-      document.getElementById(identify).appendChild(iframe);
+      embedFrame(identify, serverURL, kwargs, url);
     }
   } else {
-    xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method);
+    if (type == 'html' && !kwargs.embedded) {
+      embedFrame(identify, serverURL, kwargs, url);
+    }
+    else {
+      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method);
+    }
   }
 }
 
@@ -162,7 +187,7 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
       document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
     }
     else {
-      document.getElementById(identify).innerHTML = "Error: status code is " + xmlHttp.status;
+      document.getElementById(identify).innerHTML = statusFunc(xmlHttp.status);
     }
   }
 }
@@ -261,7 +286,7 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
       ,account = kwargs.account || ''
       ,username = kwargs.username || ''
       ,download_source = kwargs.download_source || ''
-      ,signcode = kwargs.signcode || ''
+      ,signcode = kwargs.signcode || '';
 
     var paramsObject = {
       mime: pattern,
@@ -275,28 +300,25 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
       signcode: signcode
     }
 
-    var paramsStr = '';
+    var url = serverURL + '/download?';
+    if (location) {
+      url += 'location=' + location;
+    } else {
+      url += 'location=' + '/files/' + dirMD5;
+    }
+
     for (var key in paramsObject) {
       if (!paramsObject[key]) {
         continue;
       }
-
-      if (paramsStr != '') {
-        paramsStr += '&';
-      }
-      paramsStr += key + '=' + paramsObject[key];
+      url += '&' + key + '=' + paramsObject[key];
     }
 
-    if (location) {
-      paramsStr += '&location=' + location;
-    } else {
-      paramsStr += '&location=' + '/files/' + dirMD5;
-    }
-
-    var url = serverURL + '/download?' + paramsStr;
     if (type == 'image') {
       url += '&subfile=image_large';
     }
+
+    url += '&customdownload=0';
     return url;
   }
 }
@@ -365,7 +387,6 @@ var EdoViewer = {
       } else {
         document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
       }
-      return false;
     }
 
     var viewer = {
