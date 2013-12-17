@@ -78,7 +78,6 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
     html += '</div>';
   }
   document.getElementById(identify).innerHTML = html;
-
   oninitFunc(kwargs.oninit, identify);
 }
 
