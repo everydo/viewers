@@ -97,9 +97,11 @@ var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i
 
 /****************************************** Ajax *************************************************/
 
-function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
+function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (n > retryCount - 1) {
-    document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);
+    if (!onlyRequest) {
+      document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);
+    }
     return;
   }
   var xhr = null;
@@ -121,8 +123,8 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method) {
   xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method)};
 }
 
-function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
-  if (n == 0) {
+function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+  if (n == 0 && !onlyRequest) {
     document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'loading', kwargs.loading_info);
   }
   var origin = window.location.protocol + '//' + window.location.host;
@@ -131,7 +133,9 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > retryCount - 1) {
-        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);;
+        if (!onlyRequest) {
+          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);;
+        }
         return;
       }
       var xdr = new XDomainRequest();
@@ -145,9 +149,10 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
         }
       }
       xdr.onerror = function() {
-        var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-        window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, intervalSecond * 1000);
-        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+        window.setTimeout(function(){ajaxRequest(n + 1, url, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
+        if (!onlyRequest) {
+          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+        }
       }
       var hasShow = false;
       function progres() {
@@ -170,7 +175,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
       embedFrame(identify, serverURL, kwargs, url);
     }
     else {
-      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method);
+      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
     }
   }
 }
@@ -178,16 +183,18 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method) {
 function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
   if (xmlHttp.readyState == 4) {
     if (xmlHttp.status == 200) {
-      var url = url.replace(/\&_=.*/, '');
       responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs);
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
-      var ajaxURL = url.replace(/\&_=.*/, '') + '&_=' + (new Date()).getTime();
-      window.setTimeout(function(){ajaxRequest(n + 1, ajaxURL, type, identify, serverURL, kwargs, method);}, intervalSecond * 1000);
-      document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+      window.setTimeout(function(){ajaxRequest(n + 1, url, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
+      if (!onlyRequest) {
+        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+      }
     }
     else {
-      document.getElementById(identify).innerHTML = statusFunc(xmlHttp.status);
+      if (!onlyRequest) {
+        document.getElementById(identify).innerHTML = statusFunc(xmlHttp.status);
+      }
     }
   }
 }
@@ -317,8 +324,6 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
     if (type == 'image') {
       url += '&subfile=image_large';
     }
-
-    url += '&customdownload=0';
     return url;
   }
 }
