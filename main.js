@@ -50,8 +50,8 @@ function statusFunc(status) {
 }
 
 String.prototype.encodeJs = function() {
-  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g, /\+/g];
-  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032', '\\u002B'];
+  var o = [/\\/g, /"/g, /'/g, /\//g, /\r/g, /\n/g, /;/g, /#/g, /\+/g, /&/g];
+  var n = ['\\u005C', '\\u0022', '\\u0027', '\\u002F', '\\u000A', '\\u000D', '\\u003B', '\\u0032', '\\u002B', '\\u0026'];
   var s = this;
   for (var i = 0; i < o.length; i++) {
     s = s.replace(o[i], n[i]);
@@ -120,7 +120,7 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
   }
   xhr.open(method, url, true);
   xhr.send(null);
-  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method)};
+  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method, onlyRequest)};
 }
 
 function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
@@ -129,7 +129,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
-  if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1) {
+  if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1 && type != 'html') {
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > retryCount - 1) {
@@ -180,7 +180,7 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
   }
 }
 
-function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method) {
+function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
   if (xmlHttp.readyState == 4) {
     if (xmlHttp.status == 200) {
       responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs);
