@@ -242,14 +242,13 @@ function render_zip_viewer(url, identify, kwargs) {
       var children = '';
       var path = current[child]['path'];
 
-      var download_url = serverURL + '/@@download?' + locationParams + '$$$' + path + lastParams;
-
       if (current[child]['type'] == 'folder') {
         if (current[child]['children'].length > 0) {
           children = getChildHTML(current[child]['children']);
         }
       }
       if(kwargs.download_source == '1') {
+        var download_url = serverURL + '/@@download?' + locationParams + '$$$' + encodeURL(path) + lastParams;
         var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
       } else {
         var download = '';
