@@ -81,9 +81,9 @@ Object.serializeStr = function(obj) {
   }
 };
 
-function embedFrame(identify, serverURL, kwargs, url) {
+function embedFrame(identify, kwargs, url) {
   kwargs['embedded'] = true;
-  var src = serverURL + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url.replace(/&/g, '%26');
+  var src = kwargs.server_url + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url.replace(/&/g, '%26');
   var iframe = document.createElement('iframe');
   iframe.frameBorder = 0;
   iframe.src = src;
@@ -97,10 +97,10 @@ var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i
 
 /****************************************** Ajax *************************************************/
 
-function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+function xmlHttpRequest(n, url, type, identify, kwargs, method, onlyRequest) {
   if (n > retryCount - 1) {
     if (!onlyRequest) {
-      document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);
+      document.getElementById(identify).innerHTML = tipsFunc(kwargs.server_url, 'timeout', kwargs.timeout_info);
     }
     return;
   }
@@ -120,21 +120,21 @@ function xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyR
   }
   xhr.open(method, url, true);
   xhr.send(null);
-  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, serverURL, kwargs, method, onlyRequest)};
+  xhr.onreadystatechange = function(){callbackFunc(xhr, n, url, type, identify, kwargs, method, onlyRequest)};
 }
 
-function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+function ajaxRequest(n, url, type, identify, kwargs, method, onlyRequest) {
   if (n == 0 && !onlyRequest) {
-    document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'loading', kwargs.loading_info);
+    document.getElementById(identify).innerHTML = tipsFunc(kwargs.server_url, 'loading', kwargs.loading_info);
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
-  if (navigator.appName == 'Microsoft Internet Explorer' && serverURL.indexOf(origin) == -1 && type != 'html') {
+  if (navigator.appName == 'Microsoft Internet Explorer' && kwargs.server_url.indexOf(origin) == -1 && type != 'html') {
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
     if (version > 8.0 || version == 8.0) {
       if (n > retryCount - 1) {
         if (!onlyRequest) {
-          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'timeout', kwargs.timeout_info);;
+          document.getElementById(identify).innerHTML = tipsFunc(kwargs.server_url, 'timeout', kwargs.timeout_info);;
         }
         return;
       }
@@ -142,23 +142,23 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       xdr.open('GET', url);
       xdr.onload = function() {
         if (method == 'GET') {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
+          responseSuccess(xdr, url, type, identify, kwargs);
         }
         else if (!hasShow) {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
+          responseSuccess(xdr, url, type, identify, kwargs);
         }
       }
       xdr.onerror = function() {
-        window.setTimeout(function(){ajaxRequest(n + 1, url, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
+        window.setTimeout(function(){ajaxRequest(n + 1, url, type, identify, kwargs, method, onlyRequest);}, intervalSecond * 1000);
         if (!onlyRequest) {
-          document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+          document.getElementById(identify).innerHTML = tipsFunc(kwargs.server_url, 'converting', kwargs.converting_info);
         }
       }
       var hasShow = false;
       function progres() {
         if (hasShow) { return false; }
         if (method == 'HEAD') {
-          responseSuccess(xdr, url, type, identify, serverURL, kwargs);
+          responseSuccess(xdr, url, type, identify, kwargs);
           hasShow = true;
         }
       }
@@ -168,27 +168,27 @@ function ajaxRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequ
       } catch(ex) {}
     } else {
       // IE5.x and IE6 and IE7 browser iframe embedded
-      embedFrame(identify, serverURL, kwargs, url);
+      embedFrame(identify, kwargs, url);
     }
   } else {
     if (type == 'html' && !kwargs.embedded) {
-      embedFrame(identify, serverURL, kwargs, url);
+      embedFrame(identify, kwargs, url);
     }
     else {
-      xmlHttpRequest(n, url, type, identify, serverURL, kwargs, method, onlyRequest);
+      xmlHttpRequest(n, url, type, identify, kwargs, method, onlyRequest);
     }
   }
 }
 
-function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method, onlyRequest) {
+function callbackFunc(xmlHttp, n, url, type, identify, kwargs, method, onlyRequest) {
   if (xmlHttp.readyState == 4) {
     if (xmlHttp.status == 200) {
-      responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs);
+      responseSuccess(xmlHttp, url, type, identify, kwargs);
     }
     else if (xmlHttp.status == 404 || xmlHttp.status == 0) {
-      window.setTimeout(function(){ajaxRequest(n + 1, url, type, identify, serverURL, kwargs, method, onlyRequest);}, intervalSecond * 1000);
+      window.setTimeout(function(){ajaxRequest(n + 1, url, type, identify, kwargs, method, onlyRequest);}, intervalSecond * 1000);
       if (!onlyRequest) {
-        document.getElementById(identify).innerHTML = tipsFunc(serverURL, 'converting', kwargs.converting_info);
+        document.getElementById(identify).innerHTML = tipsFunc(kwargs.server_url, 'converting', kwargs.converting_info);
       }
     }
     else {
@@ -199,27 +199,27 @@ function callbackFunc(xmlHttp, n, url, type, identify, serverURL, kwargs, method
   }
 }
 
-function responseSuccess(xmlHttp, url, type, identify, serverURL, kwargs) {
+function responseSuccess(xmlHttp, url, type, identify, kwargs) {
   kwargs['callback'] = true;
   if (type == 'html') {
-    render_html_viewer(url, identify, serverURL, kwargs);
+    render_html_viewer(url, identify, kwargs);
   }
   else if (type == 'RAR') {
     kwargs['data'] = eval('(' + xmlHttp.responseText + ')');
-    render_zip_viewer(url, identify, serverURL, kwargs);
+    render_zip_viewer(url, identify, kwargs);
   }
   else if (type == 'audio') {
-    render_audio_viewer(url, identify, serverURL, kwargs);
+    render_audio_viewer(url, identify, kwargs);
   }
   else if (type == 'video') {
-   render_video_viewer(url, identify, serverURL, kwargs);
+   render_video_viewer(url, identify, kwargs);
   }
   else if (type == 'image') {
-    render_image_viewer(url, identify, serverURL, kwargs);
+    render_image_viewer(url, identify, kwargs);
   }
   else if (type == 'image-exif') {
     kwargs['data'] = eval('(' + xmlHttp.responseText + ')');
-    render_exif_viewer(url, identify, serverURL, kwargs);
+    render_exif_viewer(url, identify, kwargs);
   }
 }
 
@@ -272,7 +272,7 @@ function getType(ext) {
 }
 
 // 得到预览地址
-function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
+function getURL(type, kwargs) {
   var patterns = {
     'flash': 'application_x-shockwave-flash-x',
     'html': 'text_html',
@@ -297,7 +297,7 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
 
     var paramsObject = {
       mime: pattern,
-      source: sourceURL,
+      source: kwargs.source_url,
       ip: ip,
       timestamp: timestamp,
       app_id: app_id,
@@ -307,10 +307,11 @@ function getURL(type, serverURL, dirMD5, sourceURL, kwargs) {
       signcode: signcode
     }
 
-    var url = serverURL + '/download?';
+    var url = kwargs.server_url + '/download?';
     if (location) {
       url += 'location=' + location;
     } else {
+      var dirMD5 = hex_md5(kwargs.source_url) + kwargs.ext;
       url += 'location=' + '/files/' + dirMD5;
     }
 
@@ -352,43 +353,46 @@ function getParentValue(value) {
 var EdoViewer = {
 
   createViewer: function (identify, kwargs) {
-    var serverURL = kwargs.server_url
-       ,sourceURL = kwargs.source_url
+    var serverURL = removeLastSlash(kwargs.server_url)
+       ,sourceURL = encodeURL(removeLastSlash(kwargs.source_url))
         ,location = kwargs.location;
 
     if (!(serverURL || sourceURL)) {
       return false;
     }
+	if (location) {
+	  kwargs.location = encodeURL(location);  
+	}
 
     var ext = getExt(location || sourceURL)
-      ,type = getType(ext)
-    ,dirMD5 = hex_md5(sourceURL) + ext;
+      ,type = getType(ext);
+
+	kwargs.server_url = serverURL;
+    kwargs.source_url = sourceURL;
 
     if (type) {
       kwargs['ext'] = ext;
-      var url = getURL(type, serverURL, dirMD5, sourceURL, kwargs);
+      var url = getURL(type, kwargs);
     }
 
     function renderViewer () {
       if(type == 'flash') {
-        render_flash_viewer(encodeURL(url), identify, serverURL, kwargs);
+        render_flash_viewer(encodeURL(url), identify, kwargs);
       }
       else if (type == 'html') {
-        render_html_viewer(url, identify, serverURL, kwargs);
+        render_html_viewer(url, identify, kwargs);
       }
       else if (type == 'RAR') {
-        render_zip_viewer(url, identify, serverURL, kwargs);
+        render_zip_viewer(url, identify, kwargs);
       }
       else if (type == 'audio') {
-        render_audio_viewer(url, identify, serverURL, kwargs);
+        render_audio_viewer(url, identify, kwargs);
       }
       else if (type == 'video') {
-        render_video_viewer(url, identify, serverURL, kwargs);
+        render_video_viewer(url, identify, kwargs);
       }
       else if (type == 'image') {
-        var exifURL = getURL('image-exif', serverURL, dirMD5, sourceURL, kwargs);
-        kwargs['exifURL'] = exifURL;
-        render_image_viewer(url, identify, serverURL, kwargs);
+        render_image_viewer(url, identify, kwargs);
       } else {
         document.getElementById(identify).innerHTML = '该文件的预览方式暂没添加上去！';
       }
