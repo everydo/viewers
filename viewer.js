@@ -59,14 +59,15 @@ function oninitFunc(oninit, identify) {
 /***************************************** 查看器 ************************************************/
 
 // HTML 查看器
-function render_html_viewer(url, identify, serverURL, kwargs) {
+function render_html_viewer(url, identify, kwargs) {
   var callback = kwargs.callback;
   if (!callback) {
-    ajaxRequest(0, url, 'html', identify, serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'html', identify, kwargs, 'HEAD');
     return;
   }
   var width = kwargs.width || 700;
   var height = kwargs.height || 450;
+  var serverURL = kwargs.server_url;
 
   if (mobileAccess) {
     var html = '<div style="overflow:scroll; -webkit-overflow-scrolling:touch; width:' + getPxValue(width) + '; height:' + getPxValue(height) + '">';
@@ -82,11 +83,12 @@ function render_html_viewer(url, identify, serverURL, kwargs) {
 }
 
 // Flash 查看器
-function render_flash_viewer(url, identify, serverURL, kwargs) {
+function render_flash_viewer(url, identify, kwargs) {
   var width = kwargs.width || 700;
   var height = kwargs.height || 537;
   var allow_print = kwargs.allow_print == 'false' || kwargs.allow_print == false ? false : true;
   var allow_copy = kwargs.allow_copy == 'false' || kwargs.allow_copy == false ? false : true;
+  var serverURL = kwargs.server_url;
 
   document.getElementById(identify).innerHTML = noInstallInfo;
 
@@ -184,13 +186,14 @@ function render_flash_viewer(url, identify, serverURL, kwargs) {
 }
 
 // 压缩包查看器
-function render_zip_viewer(url, identify, serverURL, kwargs) {
+function render_zip_viewer(url, identify, kwargs) {
   var callback = kwargs.callback;
   if (!callback) {
-    ajaxRequest(0, url, 'RAR', identify, serverURL, kwargs, 'GET');
+    ajaxRequest(0, url, 'RAR', identify, kwargs, 'GET');
     return;
   }
   var data = kwargs.data;
+  var serverURL = kwargs.server_url;
 
   function getChildHTML(children) {
     var html = ' <b>' + children.length + '项</b><ul style="padding-left:20px;">' + renderHTML(children) + '</ul>';
@@ -239,7 +242,7 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
       var children = '';
       var path = current[child]['path'];
 
-      var download_url = serverURL + '/@@download?' + locationParams + '$$$' + encodeURL(path) + lastParams;
+      var download_url = serverURL + '/@@download?' + locationParams + '$$$' + path + lastParams;
 
       if (current[child]['type'] == 'folder') {
         if (current[child]['children'].length > 0) {
@@ -260,7 +263,7 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
       if (current[child]['type'] == 'folder') {
         html += '<li style="list-style-type:none;"><img src="' + serverURL + '/edoviewer/folder.gif" style="vertical-align:middle;"> <b>' + current[child]['name'] + '</b>' + children + size + '</li>';
       } else {
-        var preview_url = serverURL + '/@@view?' + locationParams + '$$$' + encodeURL(encodeURL(path)) + mimeParams + lastParams;
+        var preview_url = serverURL + '/@@view?' + locationParams + '$$$' + path + mimeParams + lastParams;
 
         var splitname = current[child]['name'].split('.');
         if (supportExt[(splitname[splitname.length-1]).toLowerCase()]){
@@ -277,15 +280,16 @@ function render_zip_viewer(url, identify, serverURL, kwargs) {
 }
 
 // 音频查看器
-function render_audio_viewer(url, identify, serverURL, kwargs) {
+function render_audio_viewer(url, identify, kwargs) {
   var callback = kwargs.callback;
   if (!callback) {
-    ajaxRequest(0, url, 'audio', identify, serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'audio', identify, kwargs, 'HEAD');
     return;
   }
   var width = kwargs.width || '250px';
   var ext = kwargs.ext;
   var url = url.replace(/&/g, '%26');
+  var serverURL = kwargs.server_url;
 
   // 采用 HTML5 音频
   if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {
@@ -323,15 +327,16 @@ function render_audio_viewer(url, identify, serverURL, kwargs) {
 }
 
 // 视频查看器
-function render_video_viewer(url, identify, serverURL, kwargs) {
+function render_video_viewer(url, identify, kwargs) {
   var callback = kwargs.callback;
   if (!callback) {
-    ajaxRequest(0, url, 'video', identify, serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'video', identify, kwargs, 'HEAD');
     return;
   }
   var width = kwargs.width || '520px';
   var height = kwargs.height || '330px';
   var ext = kwargs.ext;
+  var serverURL = kwargs.server_url;
 
   // 采用 HTML5 视频
   if (swfobject.getFlashPlayerVersion()['major'] == 0 || mobileAccess) {
@@ -389,18 +394,21 @@ function render_video_viewer(url, identify, serverURL, kwargs) {
 }
 
 // 图片查看器
-function render_image_viewer(url, identify, serverURL, kwargs) {
+function render_image_viewer(url, identify, kwargs) {
   var callback = kwargs.callback;
   if (!callback) {
-    ajaxRequest(0, url, 'image', identify, serverURL, kwargs, 'HEAD');
+    ajaxRequest(0, url, 'image', identify, kwargs, 'HEAD');
     return;
   }
-  var exifURL = kwargs.exifURL;
+
   var ext = kwargs.ext;
+  var serverURL = kwargs.server_url;
+  var sourceURL = kwargs.source_url;
 
   document.getElementById(identify).innerHTML = '<img src="' + url + '">';
-
   if(ext== '.jpg' || ext == '.jpeg' || ext == '.tiff') {
+    var dirMD5 = hex_md5(sourceURL) + ext;
+    var exifURL = getURL('image-exif', kwargs);
     var fun = "showEXIF('" + exifURL + "', 'image', '" + identify + "', '" + serverURL + "')";
     var html = '<br /><a href="javascript:;"; onclick="' + fun + '" />查看EXIF信息</a>';
        html += '<img src="' + serverURL + '/edoviewer/waiting.gif" id="' + identify + '-exif-waiting" style="display:none;">';
@@ -419,12 +427,12 @@ function showEXIF(exifURL, type, identify, serverURL) {
     }
   } else {
     document.getElementById(identify + '-exif-waiting').style.display = 'block';
-    ajaxRequest(0, exifURL, 'image-exif', identify, serverURL, {}, 'GET', true);
+    ajaxRequest(0, exifURL, 'image-exif', identify, {server_url:serverURL}, 'GET', true);
   }
 }
 
 // EXIF 查看器
-function render_exif_viewer(url, identify, serverURL, kwargs) {
+function render_exif_viewer(url, identify, kwargs) {
   var data = kwargs.data;
 
   var html = '<table style="border-spacing:0; line-height:1.5; display:block;">'
