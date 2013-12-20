@@ -360,14 +360,14 @@ var EdoViewer = {
     if (!(serverURL || sourceURL)) {
       return false;
     }
-	if (location) {
-	  kwargs.location = encodeURL(location);
-	}
+    if (location) {
+      kwargs.location = encodeURL(location);
+    }
 
     var ext = getExt(location || sourceURL)
       ,type = getType(ext);
 
-	kwargs.server_url = serverURL;
+    kwargs.server_url = serverURL;
     kwargs.source_url = sourceURL;
 
     if (type) {
