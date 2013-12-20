@@ -12,10 +12,8 @@
         <div id="doc-viewer-01"></div>
 
         <script type="text/javascript">
-            var serverURL = 'http://viewer.everydo.com:9870';
-
             var flashkwargs = {
-              server_url: serverURL,
+              server_url: 'http://viewer.everydo.com:9870',
               source_url: 'http://download.zopen.cn/demo/edo-viewer.ppt',
               width: 700,
               height: 537,
@@ -35,10 +33,8 @@
             viewer.load();
 
             // Call render
-            var sourceURL ='http://download.zopen.cn/demo/edo-viewer.ppt';
-            var dirMD5 = hex_md5(sourceURL) + '.ppt';
-            var url = getURL('flash', serverURL, dirMD5, sourceURL);
-            render_flash_viewer(url, 'doc-viewer-01', serverURL, flashkwargs);
+            var url = getURL('flash', flashkwargs);
+            render_flash_viewer(url, 'doc-viewer-01', flashkwargs);
         </script>
     </body>
 </html>

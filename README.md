@@ -40,28 +40,28 @@ kwargs是一个展示参数，包括：
 
 - 纯文本查看器
 
-            render_text_viewer(url, identidy, serverURL, kwargs)
+            render_text_viewer(url, identidy, kwargs)
 
 - 图片查看器
 
-            render_image_viewer(url, identidy, serverURL, kwargs)
+            render_image_viewer(url, identidy, kwargs)
 
 - html查看器
 
-            render_html_viewer(url, identidy, serverURL, kwargs)
+            render_html_viewer(url, identidy, kwargs)
 
 - 压缩包查看器
 
-            render_zip_viewer(url, identidy, serverURL, kwargs)
+            render_zip_viewer(url, identidy, kwargs)
 
 - 音频查看器
 
-            render_audio_viewer(url, identidy, serverURL, kwargs)
+            render_audio_viewer(url, identidy, kwargs)
 
 - 视频查看器
 
-            render_video_viewer(url, identidy, serverURL, kwargs)
+            render_video_viewer(url, identidy, kwargs)
 
 - 易度的pdf转换swfx查看器
 
-            render_flash_viewer(url, identidy, serverURL, kwargs)
+            render_flash_viewer(url, identidy, kwargs)

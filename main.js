@@ -83,7 +83,7 @@ Object.serializeStr = function(obj) {
 
 function embedFrame(identify, kwargs, url) {
   kwargs['embedded'] = true;
-  var src = kwargs.server_url + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs) + '&url=' + url.replace(/&/g, '%26');
+  var src = kwargs.server_url + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs);
   var iframe = document.createElement('iframe');
   iframe.frameBorder = 0;
   iframe.src = src;
@@ -361,7 +361,7 @@ var EdoViewer = {
       return false;
     }
 	if (location) {
-	  kwargs.location = encodeURL(location);  
+	  kwargs.location = encodeURL(location);
 	}
 
     var ext = getExt(location || sourceURL)
