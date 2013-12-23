@@ -240,7 +240,7 @@ function render_zip_viewer(url, identify, kwargs) {
 
     for (var child = 0; child < current.length; child++) {
       var children = '';
-      var path = current[child]['path'];
+      var path = encodeURL((current[child]['path']));
 
       if (current[child]['type'] == 'folder') {
         if (current[child]['children'].length > 0) {
@@ -248,7 +248,7 @@ function render_zip_viewer(url, identify, kwargs) {
         }
       }
       if(kwargs.download_source == '1') {
-        var download_url = serverURL + '/@@download?' + locationParams + '$$$' + encodeURL(path) + lastParams;
+        var download_url = serverURL + '/@@download?' + locationParams + '$$$' + path + lastParams;
         var download = '<a href="' + download_url + '" title="下载"><img style="border:0;" src="' + serverURL + '/edoviewer/download.gif">下载</a>';
       } else {
         var download = '';
