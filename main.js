@@ -309,7 +309,7 @@ function getURL(type, kwargs) {
 
     var url = kwargs.server_url + '/download?';
     if (location) {
-      url += 'location=' + location;
+      url += 'location=' + encodeURL(location);
     } else {
       var dirMD5 = hex_md5(kwargs.source_url) + kwargs.ext;
       url += 'location=' + '/files/' + dirMD5;
@@ -319,7 +319,7 @@ function getURL(type, kwargs) {
       if (!paramsObject[key]) {
         continue;
       }
-      url += '&' + key + '=' + paramsObject[key];
+      url += '&' + key + '=' + encodeURL(paramsObject[key]);
     }
 
     if (type == 'image') {
@@ -354,14 +354,11 @@ var EdoViewer = {
 
   createViewer: function (identify, kwargs) {
     var serverURL = removeLastSlash(kwargs.server_url)
-       ,sourceURL = encodeURL(removeLastSlash(kwargs.source_url))
+       ,sourceURL = removeLastSlash(kwargs.source_url)
         ,location = kwargs.location;
 
     if (!(serverURL || sourceURL)) {
       return false;
-    }
-    if (location) {
-      kwargs.location = encodeURL(location);
     }
 
     var ext = getExt(location || sourceURL)
