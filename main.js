@@ -297,7 +297,7 @@ function getURL(type, kwargs) {
 
     var paramsObject = {
       mime: pattern,
-      source: kwargs.source_url,
+      source_url: kwargs.source_url,
       ip: ip,
       timestamp: timestamp,
       app_id: app_id,
@@ -311,7 +311,7 @@ function getURL(type, kwargs) {
     if (location) {
       url += 'location=' + encodeURL(location);
     } else {
-      var dirMD5 = hex_md5(kwargs.source_url) + kwargs.ext;
+      var dirMD5 = hex_md5(encodeURL(kwargs.source_url)) + kwargs.ext;
       url += 'location=' + '/files/' + dirMD5;
     }
 
