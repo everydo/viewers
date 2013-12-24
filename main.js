@@ -230,7 +230,7 @@ function responseSuccess(xmlHttp, url, type, identify, kwargs) {
 
 // 进行编码处理
 function encodeURL(url) {
-  return encodeURIComponent(url).replace(/\+/g, '%2B');
+  return encodeURI(url).replace(/\+/g, '%2B');
 }
 
 // 删除最后斜杠
