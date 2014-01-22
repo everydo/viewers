@@ -84,13 +84,19 @@ Object.serializeStr = function(obj) {
 function embedFrame(identify, kwargs, url) {
   kwargs['embedded'] = true;
   var src = kwargs.server_url + '/edo_viewer?kwargs=' + Object.serializeStr(kwargs);
-  var iframe = document.createElement('iframe');
-  iframe.frameBorder = 0;
-  iframe.src = src;
-  iframe.width = getParentValue(kwargs.width);
-  iframe.height = getParentValue(kwargs.height);
-  document.getElementById(identify).innerHTML = '';
-  document.getElementById(identify).appendChild(iframe);
+  var width = getParentValue(kwargs.width);
+  var height = getParentValue(kwargs.height);
+
+  if (mobileAccess) {
+    var html = '<div style="overflow:scroll;-webkit-overflow-scrolling:touch;width:' + width[1] + ';height:' + height[1] + '">';
+  } else {
+    var html = '';
+  }
+  html += '<iframe frameBorder="0" width="' + width[0] + '" height="' + height[0] + '" src=' + src + '></iframe>';
+  if (mobileAccess) {
+    html += '</div>';
+  }
+  document.getElementById(identify).innerHTML = html;
 }
 
 var mobileAccess = /android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent);
@@ -129,9 +135,9 @@ function ajaxRequest(n, url, type, identify, kwargs, method, onlyRequest) {
   }
   var origin = window.location.protocol + '//' + window.location.host;
   // browser IE8 realse support XDomainRequest
-  if (navigator.appName == 'Microsoft Internet Explorer' && kwargs.server_url.indexOf(origin) == -1 && type != 'html') {
+  if (navigator.appName == 'Microsoft Internet Explorer' && origin.indexOf(kwargs.server_url) == -1 && type != 'html') {
     var version = navigator.appVersion.split(";")[1].replace(/ +MSIE +/, '');
-    if (version > 8.0 || version == 8.0) {
+    if ((version > 8.0 || version == 8.0)) {
       if (n > retryCount - 1) {
         if (!onlyRequest) {
           document.getElementById(identify).innerHTML = tipsFunc(kwargs.server_url, 'timeout', kwargs.timeout_info);;
@@ -230,7 +236,7 @@ function responseSuccess(xmlHttp, url, type, identify, kwargs) {
 
 // 进行编码处理
 function encodeURL(url) {
-  return encodeURI(url).replace(/\+/g, '%2B');
+  return encodeURI(url).replace(/#/g, '%23').replace(/\?/g, '%3F');
 }
 
 // 删除最后斜杠
@@ -296,7 +302,6 @@ function getURL(type, kwargs) {
       ,signcode = kwargs.signcode || '';
 
     var paramsObject = {
-      mime: pattern,
       source_url: kwargs.source_url,
       ip: ip,
       timestamp: timestamp,
@@ -309,9 +314,9 @@ function getURL(type, kwargs) {
 
     var url = kwargs.server_url + '/download?';
     if (location) {
-      url += 'location=' + encodeURL(location);
+      url += 'location=' + location;
     } else {
-      var dirMD5 = hex_md5(encodeURL(kwargs.source_url)) + kwargs.ext;
+      var dirMD5 = hex_md5(kwargs.source_url) + kwargs.ext;
       url += 'location=' + '/files/' + dirMD5;
     }
 
@@ -320,6 +325,10 @@ function getURL(type, kwargs) {
         continue;
       }
       url += '&' + key + '=' + encodeURL(paramsObject[key]);
+    }
+
+    if (!/(mp3|flv|swf)$/i.test(kwargs.ext)) {
+      url += '&mime=' + pattern;
     }
 
     if (type == 'image') {
@@ -331,18 +340,26 @@ function getURL(type, kwargs) {
 
 // 得到父高宽值
 function getParentValue(value) {
+  var pxValue = '800px';
   if (value == undefined) {
-    value = 700;
-  } else if (/px$/i.test(value)) {
-    value = value.replace(/px/i, '') + 50 + 'px';
-  } else if (/em$/i.test(value)) {
-    value = value.replace(/em/i, '') + 5 + 'em';
-  } else if (/\d$/.test(value)) {
+    value = pxValue;
+  }
+  else if (/px$/i.test(value)) {
+    pxValue = value = value.replace(/px/i, '') + 50 + 'px';
+  }
+  else if (/em$/i.test(value)) {
+    var reValue = value.replace(/em/i, '');
+    pxValue = (reValue + 1) * 10 + 'px';
+    value = reValue + 5 + 'em';
+  }
+  else if (/\d$/.test(value)) {
+    pxValue = value + 50 + 'px';
     value = value + 50;
-  } else if (/%$/.test(value)) {
+  }
+  else if (/%$/.test(value)) {
     value = '100%';
   }
-  return value;
+  return [value, pxValue];
 }
 
 /****************************************** END **************************************************/
@@ -373,8 +390,8 @@ var EdoViewer = {
     }
 
     function renderViewer () {
-      if(type == 'flash') {
-        render_flash_viewer(encodeURL(url), identify, kwargs);
+      if (type == 'flash') {
+        render_flash_viewer(url, identify, kwargs);
       }
       else if (type == 'html') {
         render_html_viewer(url, identify, kwargs);

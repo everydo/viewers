@@ -15,31 +15,36 @@ function getPxValue(value) {
   return value;
 }
 
-function replaceContentURL(identify, url) {
+function onloadHandle(identify, url) {
   var url = url + '&subfile=';
   var frameDocument = window.frames[identify + '-frame-content'].document;
-  var tagsName = ['a', 'img'];
-  var re = new RegExp('^' + frameDocument.location.protocol + '//' + frameDocument.location.host);
 
+  var trimStr = function(str) {return str ? str.replace(/^\s+|\s+$/g, '') : '';}
+  var re = /^(https?|file|ftps?|mailto|javascript|data:image\/[^;]{2,9};):|^#/i;
+
+  var tagsName = ['a', 'img'];
   for (var t = 0; t < tagsName.length; t++) {
     var elements = frameDocument.getElementsByTagName(tagsName[t]);
     for (var x = 0; x < elements.length; x++) {
       if (tagsName[t] == 'a') {
-        var href = elements[x].href;
-        if (!(re.test(href))) {
+        var href = trimStr(elements[x].getAttribute('href', 2));
+        if (re.test(href) || !href) {
           continue;
+        } else {
+          elements[x].href = url + href;
         }
-        var old = href.replace(/.*\//, '');
-        elements[x].href = url + old;
       } else {
-        var src = elements[x].src;
-        if (!(re.test(src))) {
+        var src = trimStr(elements[x].getAttribute('src', 2));
+        if (re.test(src) || !src) {
           continue;
+        } else {
+          elements[x].src = url + src;
         }
-        var old = src.replace(/.*\//, '');
-        elements[x].src = url + old;
       }
     }
+  }
+  if (mobileAccess) {
+    try {frameDocument.getElementById('page-container').style.left = 0;} catch (ex) {}
   }
 }
 
@@ -52,6 +57,26 @@ function oninitFunc(oninit, identify) {
     var func = oninit.match(re)[1];
     if (func) {
       return eval('oninit=' + oninit + ';oninit("' + identify + '");');
+    }
+  }
+}
+
+function changeFirstLoadPage(identify) {
+  var flashObj;
+  if (window.document[identify]) {
+    flashObj = window.document[identify];
+  } else if (navigator.appName.indexOf('Microsoft') == -1) {
+    if (document.embeds && document.embeds[identify]) {
+      flashObj = document.embeds[identify];
+    }
+  } else {
+    flashObj = document.getElementById(identify);
+  }
+  if (flashObj && flashObj.tagName == 'OBJECT') {
+    for (var x = 1; x <= 3; x++) {
+      try {
+        flashObj.loadPage(x*3);
+      } catch (ex) {}
     }
   }
 }
@@ -69,15 +94,7 @@ function render_html_viewer(url, identify, kwargs) {
   var height = kwargs.height || 450;
   var serverURL = kwargs.server_url;
 
-  if (mobileAccess) {
-    var html = '<div style="overflow:scroll; -webkit-overflow-scrolling:touch; width:' + getPxValue(width) + '; height:' + getPxValue(height) + '">';
-  } else {
-    var html = '';
-  }
-  html += '<iframe name="' + identify+ '-frame-content" width="' + width + '" height="' + height + '" style="border:1px solid #c3c3c3;" src="' + url + '" onload="replaceContentURL(\'' + identify + '\',\'' + url + '\')"></iframe>';
-  if (mobileAccess) {
-    html += '</div>';
-  }
+  html = '<iframe name="' + identify+ '-frame-content" width="' + width + '" height="' + height + '" style="border:1px solid #c3c3c3;" src="' + url + '" onload="onloadHandle(\'' + identify + '\',\'' + url + '\')"></iframe>';
   document.getElementById(identify).innerHTML = html;
   oninitFunc(kwargs.oninit, identify);
 }
@@ -89,6 +106,7 @@ function render_flash_viewer(url, identify, kwargs) {
   var allow_print = kwargs.allow_print == 'false' || kwargs.allow_print == false ? false : true;
   var allow_copy = kwargs.allow_copy == 'false' || kwargs.allow_copy == false ? false : true;
   var serverURL = kwargs.server_url;
+  var url = encodeURL(url).replace(/&/g, '%26');
 
   document.getElementById(identify).innerHTML = noInstallInfo;
 
@@ -129,6 +147,7 @@ function render_flash_viewer(url, identify, kwargs) {
     if (document.getElementById(identify).tagName == 'OBJECT') {
       wheelSetup();
       window.clearInterval(setInt);
+      window.setTimeout(function(){changeFirstLoadPage(identify);}, 500);
     }
   }
   function thisMovie(movieName) {
